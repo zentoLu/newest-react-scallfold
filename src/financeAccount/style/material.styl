@@ -1,0 +1,140 @@
+.img-loader-box{
+    position: relative;
+    z-index: 0;
+    input{
+        position: absolute;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+    }
+    img{
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+    }
+}
+
+.page-finance-account{
+    .form-border-top{
+        border-top: $border;
+        margin: 35px 53px;
+    }
+
+    /*form样式重置*/
+    .admin-form{
+        width: 500px;
+        margin: 0 auto;
+        .ant-form-item-label{
+            text-align: left;
+            label{
+                font-size: 16px;
+                color: #768893;
+                line-height: 32px;
+                &::after{
+                    content: '';
+                }
+            }
+        }
+        .ant-input{
+            width: 300px;
+            height: 44px;
+        }
+    }
+
+    .form-title{
+        width: 500px;
+        margin: 0 auto 30px;
+    }
+
+    .form-title-left{
+        font-size: 18px;
+        color: #1D1D1D;
+    }
+
+    .form-title-right{
+        font-size: 12px;
+        color: #A4A8AB;
+        line-height: 20px;
+    }
+
+    #smsCode{
+        width: 180px;
+    }
+
+    .btn-getcode{
+        width: 106px;
+        color: #50C1FF;
+        text-align: center;
+        display: inline-block;
+        border: $inputBorder;
+        border-radius: 4px;
+        line-height: 42px;
+        position: relative;
+        top: 2px;
+        left: 12px;
+    }
+    .id-sub-label{
+        width: 101px;
+        color: #A4A8AB;
+        text-align: center;
+        line-height: 20px;
+    }
+    .form-item-id{
+        .ant-form-item-control{
+            width: 300px;
+            margin-top: 14px;
+        }
+    }
+
+    .id-front{
+        width: 140px;
+        height: 85px;
+        background: url(../img/icon_007.png) no-repeat center;
+    }
+    .id-back{
+        width: 140px;
+        height: 85px;
+        background: url(../img/icon_008.png) no-repeat center;
+    }
+    .id-notice{
+        font-size: 12px;
+        color: #A4A8AB;
+        line-height: 32px;
+        clear: both;
+    }
+
+
+    .btn-box{
+        width: 500px;
+        margin: 30px auto 97px;
+    }
+    .btn-prev{
+        font-size: 16px;
+        color: $blue;
+        text-align: center;
+        line-height: 42px;
+        border: 1px solid $blue;
+        background: #fff;
+        width: 220px;
+        float: left;
+        border-radius: 44px;
+        cursor: pointer;
+        display: block;
+        height: 44px;
+    }
+    .btn-next{
+        font-size: 16px;
+        color: #FFFFFF;
+        text-align: center;
+        line-height: 44px;
+        background: #50C1FF;
+        width: 220px;
+        border-radius: 44px;
+        float: right;
+        cursor: pointer;
+        display: block;
+        height: 44px;
+    }
+}

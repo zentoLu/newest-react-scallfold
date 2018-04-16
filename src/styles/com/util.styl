@@ -1,0 +1,80 @@
+/*! util */
+
+@require 'vars';
+@require 'mixins';
+
+
+
+// 清除浮动
+.clearfix {
+    clearfix()
+}
+
+// 内容区域居中
+.center-block {
+    display:block; margin-left:auto; margin-right:auto;
+}
+.inline-block {
+    display: inline-block; *display: inline; *zoom: 1;
+}
+.inline {display:inline;}
+
+// 隐藏
+.hide {display: none !important; visibility: hidden !important;}
+// 隐藏文本
+.hide-text {font:0/0 a;color:transparent;text-shadow:none;background-color:transparent;border:0}
+// 不可见，但不影响屏幕阅读器
+.invisible {visibility: hidden}
+
+.relative {position:relative;}
+.absolute {position:absolute;}
+
+
+// 字体颜色
+.text-primary {color:$brand-primary;}
+.text-minor {color:$brand-minor;}
+.text-notice {color:$brand-notice;}
+.text-red {color:#D20300;}
+.text-dark {color:#4c4c4c;}
+.text-gray {color:#999;}
+.text-light {color:#aeaeae;}
+.text-white {color:#fff;}
+.text-orange {color: #f90;}
+.text-blue {color: #0095d9;}
+
+
+// ======= 文本排版 ========
+
+.tal,.text-left {text-align: left}
+.tar,.text-right {text-align: right}
+.tac,.text-center {text-align: center}
+.vat {vertical-align: top}
+.vam {vertical-align: middle}
+
+.bold {font-weight: bold}
+.normal {font-weight: normal; font-style: normal; text-decoration:none;}
+.fw200 {font-weight: 200}
+.fw400 {font-weight: 400}
+.fw700 {font-weight: 400}
+
+.fs12 {font-size: 12px}
+.fs14 {font-size: 14px}
+.fs16 {font-size: 16px}
+.fs18 {font-size: 18px}
+.fs20 {font-size: 20px}
+.fs24 {font-size: 24px}
+.fs28 {font-size: 28px}
+.fs30 {font-size: 30px}
+.fs32 {font-size: 32px}
+.fs36 {font-size: 36px}
+.fs40 {font-size: 40px}
+.fs44 {font-size: 44px}
+.fs48 {font-size: 48px}
+
+.lh150 {line-height: 1.5}
+.lh180 {line-height: 1.8}
+.lh200 {line-height: 2}
+.lh220 {line-height: 2.2}
+.pt50 {padding-top:50px;}
+
+.bg-white {background: #fff;}

@@ -1,0 +1,33 @@
+.indentityBox{
+    padding: 36px 0;
+    background-color: #f9f9f9;
+    .crumbs{
+        padding-left:2em;
+        color:#A4A8AB;
+        line-height: 56px;
+        font-size: 16px;
+        a{
+            padding-right:30px;
+            &::after{
+                content: '>';
+                position: absolute;
+                margin-left: 11px;
+            }
+            &:last-child::after{
+                content: ''
+            }
+        }
+    }
+    .container{
+        background-color: #fff;
+        border:1px solid #E6E8EE;
+    }
+}
+
+.fl{
+    float: left;
+}
+
+.fr{
+    float: right;
+}

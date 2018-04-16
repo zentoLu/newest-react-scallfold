@@ -1,0 +1,88 @@
+/*! form */
+
+/*
+ * 1. 去除IE6/7, FF3+, S5, Chrome默认的margin
+ * 2. 在不同浏览器，label与input(特别是checkbox和radio)总是不能对齐，这里统一了各个浏览器的表现
+ * 3. 解决IE6/7不能继承字体样式
+ */
+input,button,textarea,select,label {
+    margin:0;  /*1*/
+    vertical-align:middle;  /*2*/
+    font-size:100%;  /*3*/
+    font-family: inherit; /*3*/
+}
+
+select {
+    box-sizing: content-box;
+}
+
+/**
+ * 1. Avoid the WebKit bug in Android 4.0.* where (2) destroys native `audio`
+ *    and `video` controls.
+ * 2. Correct inability to style clickable `input` types in iOS.
+ * 3. Improve usability and consistency of cursor style between image-type
+ *    `input` and others.
+ */
+button,
+html input[type="button"],
+input[type="reset"],
+input[type="submit"] {
+    -webkit-appearance: button; /* 2 */
+    cursor: pointer; /* 3 */
+}
+
+/**
+ * FF3/4 have !important on line-height in UA stylesheet
+ * Inner spacing ie IE6/7
+ */
+button,
+input {
+    line-height: normal;
+    *overflow: visible;
+}
+
+/**
+ * 1. Address box sizing set to content-box in IE 8/9.
+ * 2. Remove excess padding in IE 8/9.
+ * 3. Remove excess padding in IE 7.
+ *    Known issue: excess padding remains in IE 6.
+ */
+input[type="checkbox"],
+input[type="radio"] {
+    box-sizing: border-box; /* 1 */
+    padding: 0; /* 2 */
+    *height: 13px; /* 3 */
+    *width: 13px; /* 3 */
+}
+
+/*
+ * 去除FF3+内补丁和内边框
+ */
+button::-moz-focus-inner,
+input::-moz-focus-inner {
+    border:0;
+    padding:0;
+}
+
+/*
+ * 1. 让FF,S5,Chrome下的textarea只能纵向拉伸高度, 避免因拉伸而影响布局
+ * 2. 去掉IE下默认的滚动条占位
+ * 3. 默认textarea与文本baseline对齐，导致文本沉在下面比较难看，这里统一与文本顶对齐
+ */
+textarea {
+    resize:vertical; /*1*/
+    overflow:auto; /*2*/
+    vertical-align:top; /*3*/
+    min-height: 5em;
+}
+
+label.require{
+    inline-block();
+    position:relative;
+    &:before{
+        content:"*";
+        position:absolute;
+        left: -10px;
+        color:red;
+    }
+}
