@@ -4,7 +4,7 @@ import {ajaxPost} from 'request'
 import { connect } from 'react-redux';
 import { Form, Icon, Input, Button } from 'antd';
 import projectTool from '../../util/projectTool'
-import {rules} from '../../globalComponents/form/valid.js'
+import {validator} from '../../globalComponents/form/valid.js'
 const FormItem = Form.Item;
 
 const action = function(values) {
@@ -20,15 +20,7 @@ class AdminForm extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.getCode = this.getCode.bind(this);
 
-        ajaxPost('/user/login', {
-            name: '18948174517', password: '123456zxc', type: 'GW'
-        }, function(data) {
-            console.log(data);
-        });
 
-        ajaxPost('/cust/myLoan.do?action=getMyLoan', {}, function(data) {
-            console.log(data);
-        });
         this.props.dispatch({type: 'STATE', states: {adminFormSubmited: false}});
     }
 
@@ -37,8 +29,12 @@ class AdminForm extends React.Component {
         this.props.dispatch({type: 'STATE', states: {adminFormSubmited: true}});
         this.props.form.validateFields((err, values) => {
             if (!err) {
-                console.log('Received values of form: ', values);
+                console.log('Received values of form: ', JSON.stringify(values));
+
                 this.props.dispatch(action(values));
+                //校验图片
+
+
 
                 location.hash = '#/addMaterial';
             }
@@ -51,16 +47,11 @@ class AdminForm extends React.Component {
             mobile: values.mobile, type: '02'
         }, (data) => {
             console.log(data);
+            this.props.dispatch({
+                type: 'STATE',
+                states: {msgCode: data}
+            })
         });
-    }
-
-    validId(rule, value, callback) {
-        console.log(rule);
-        if(!rules.idcard(value)) {
-            callback('');
-        }else{
-            callback();
-        }
     }
 
     render() {
@@ -113,7 +104,7 @@ class AdminForm extends React.Component {
                 )}
                 <a className="btn-getcode" onClick={() => {this.getCode()}}>发送验证码</a>
             </FormItem>
-            { CustomInput('actorIdCode', '身份证号', [{ rule: 'id;required',required: true, message: '请输入正确的身份证号!' ,validator: this.validId }], '请输入身份证号') }
+            { CustomInput('actorIdCode', '身份证号', [{ rule: 'idcard;required',required: true, message: '请输入正确的身份证号!' ,validator: validator }], '请输入身份证号') }
             <div className="ant-row ant-form-item form-item-id">
                 <div className="ant-form-item-label ant-col-xs-24 ant-col-sm-8">
                     <label className="ant-form-item-required" >身份证上传</label>
@@ -195,8 +186,5 @@ class Material extends React.Component {
     }
 }
 
-//connect((state) => { return { account: state.account } })(WrappedAdminForm);
-
 export default  connect((state) => { return { account: state.account } })( Material );
-//export default Material
-// export default  connect((state) => { return { Index: state.Index } }, undefined, undefined, {withRef: true})( Index );
+

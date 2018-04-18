@@ -1,14 +1,109 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
 import { connect } from 'react-redux';
-// import { connect } from 'react-redux';
+import {ajaxPost} from 'request'
+import { Form, Input, Modal, Button, Checkbox } from 'antd';
+const FormItem = Form.Item;
+class SmsForm extends React.Component {
 
-class SignStart extends React.Component {
-    constructor(props) {
-        super(props)
+    getCode() {
+        //const mobile = this.props.sign || '13480704730';
+        const mobile = '13480704730';
+        ajaxPost('/front/financing.do?action=msgCode', {
+            mobile: mobile, type: '03'
+        }, (data) => {
+            console.log(data);
+            this.props.dispatch({
+                type: 'STATE',
+                states: {msgCode: data}
+            })
+        });
     }
 
     render() {
+        const { getFieldDecorator } = this.props.form;
+        return (
+            <Form className="sms-form">
+                <FormItem>
+                    {getFieldDecorator('smsCode', {
+                        rules: [{ required: true, message: '请输入短信验证码!' }],
+                    })(
+                        <Input  placeholder="请输入短信验证码" />
+                    )}
+                    <a className="btn-getcode" onClick={() => {this.getCode()}}>发送验证码</a>
+                </FormItem>
+            </Form>
+        )
+    }
+}
+
+const WrappedSmsForm = Form.create({
+    onValuesChange(props, value) {
+        console.log(props,value);
+        props.dispatch({
+            type: 'SIGN',
+            values: {smsCode: value.smsCode}
+        });
+    }
+})(SmsForm);
+
+class SignStart extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = { visible: false }
+        ajaxPost('/user/login', {
+            name: '18948174517', password: '123456zxc', type: 'GW'
+        }, function(data) {
+            console.log(data);
+        });
+    }
+
+    hideModal(e) {
+      console.log(e);
+      this.setState({
+        visible: false,
+      });
+    }
+
+    showModal() {
+      this.setState({
+        visible: true,
+      });
+    }
+
+    handleOk(e) {
+      console.log(e);
+      /*this.setState({
+        visible: false,
+      });*/
+      const {sign} = this.props;
+      ajaxPost('/front/financing.do?action=sign', {
+          prdCode: 'test', smsCode: sign.values.smsCode, smsFlowNo: sign.states.msgCode.data.smsFlowNo
+      }, (data) => {
+          console.log(data);
+          this.props.dispatch({
+              type: 'STATE',
+              states: {msgCode: data}
+          })
+      });
+    }
+
+    handleCancel(e) {
+      console.log(e);
+      this.setState({
+        visible: false,
+      });
+    }
+
+    handleConfirm() {
+        console.log(1);
+        this.setState({
+          visible: true,
+        });
+    }
+
+    render() {
+        console.log(this.props);
         return (
             <div className="indentityBox">
                 <div className="container finance-account-finish">
@@ -17,6 +112,20 @@ class SignStart extends React.Component {
                         <a href="javascript:;">现金盈基金</a>
                         <a href="javascript:;">签约</a>
                     </div>
+                    <Modal
+                      title="短信验证"
+                      visible={this.state.visible}
+                      onOk={() => {this.handleOk()}}
+                      onCancel={() => {this.hideModal()}}
+                      okText="确认"
+                      cancelText="取消"
+                      maskClosable=""
+                    >
+                        <div className="pop-body">
+                            <p>已向管理员手机号180****1234发送一条验证码，请输入</p>
+                            <WrappedSmsForm {...this.props} />
+                        </div>
+                    </Modal>
                     <div className="page-sign">
                         <div className="sign-info">
                             <div className="sign-info-title">签约信息</div>
@@ -49,11 +158,11 @@ class SignStart extends React.Component {
                                 <span className="icon-check"></span>
                             </span>
                             <span className="protocol-text">
-                                我已阅读并同意遵守<a href="#">《金蝶互联网金融服务协议》</a>
+                                <Checkbox>我已阅读并同意遵守<a href="#">《金蝶互联网金融服务协议》</a></Checkbox>
                             </span>
                         </div>
                         <div className="btn-box">
-                            <div className="btn-confirm">确认</div>
+                            <a  onClick={() => {this.handleConfirm()}} className="btn-confirm">确认</a>
                         </div>
                         <div className="sign-footer">
                             <div className="footer-border-line"></div>
@@ -72,5 +181,4 @@ class SignStart extends React.Component {
 }
 
 export default  connect((state) => { return { sign: state.sign } })( SignStart );
-// export default  connect((state) => { return { Index: state.Index } }, undefined, undefined, {withRef: true})( Index );
 

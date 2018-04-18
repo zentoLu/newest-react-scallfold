@@ -4,6 +4,20 @@ const webpack = require('webpack');
 const path = require('path');
 const defaultSettings =  require('./default.js');
 let config = {
+    /*entry: {
+        index:[
+        'babel-polyfill',
+        'react-hot-loader/patch',
+        './src/index.js'],
+        financing:[
+        'babel-polyfill',
+        'react-hot-loader/patch',
+        './src/financing/financing.js'],
+        financeAccount:[
+        'babel-polyfill',
+        'react-hot-loader/patch',
+        './src/financeAccount/financeAccount.js']
+    },*/
     entry:{
     financeAccount: [
         'react-hot-loader/patch',
@@ -53,17 +67,11 @@ let config = {
             hash: false,
             template: './src/index.html'
         }),*/
-        /*new HtmlWebpackPlugin({
+        new HtmlWebpackPlugin({
             filename: 'financeAccount.html',
             inject: false, //注入位置'head','body',true,false
             hash: true,
             template: './src/financeAccount/financeAccount.html'
-        }),*/
-        new HtmlWebpackPlugin({
-            filename: 'financing.html',
-            inject: false, //注入位置'head','body',true,false
-            hash: false,
-            template: './src/financing/financing.html'
         }),
         new webpack.HotModuleReplacementPlugin()
     ]

@@ -1,11 +1,21 @@
 import React from 'react'
 import {Link} from 'react-router-dom'
 import { connect } from 'react-redux'
+import {ajaxPost} from 'request'
 
 class Index extends React.Component {
     constructor(props) {
         super(props)
         //this.isLegal = this.isLegal.bind(this)
+        ajaxPost('/user/login', {
+            name: '18948174517', password: '123456zxc', type: 'GW'
+        }, function(data) {
+            console.log(data);
+        });
+
+        ajaxPost('/cust/myLoan.do?action=getMyLoan', {}, function(data) {
+            console.log(data);
+        });
     }
 
     isLegal(isLegal) {
@@ -34,7 +44,7 @@ class Index extends React.Component {
                     <div className="crumbs">
                         <a href="/">首页</a>
                         <a href="javascript:;">现金盈基金</a>
-                        <a href="javascript:;">开户</a>
+                        <a href="javascript:;">开户111</a>
                     </div>
                     <div className="steps">
                         <div className="step step1"><img src={require( '../../img/confirm-indentity-icon1.png')} alt="企业理财" /></div>

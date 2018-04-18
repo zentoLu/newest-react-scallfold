@@ -268,13 +268,81 @@ export const rules = {
     }
 };
 
-validId(rule, value, callback) {
-    if(!rules.idcard(value)) {
-        callback('请输入正确的身份证号');
-    }else{
+export const validator = (rule, value, callback) => {
+    if( valid(value, rule.rule) ) {
         callback();
+    }else{
+        callback('');
     }
 }
-export const validator = (rule, value, callback) => {
 
-}
+export const valid = function(value, rule) {
+    //console.log(rule);
+    value = value || '';
+    value = String(value);
+    if(rule) {
+        const ruleList = rule.split(';');
+        value = trim(value);
+
+        for(var j = 0,rlen=ruleList.length;j < rlen;j++) {
+            var curRule = trim(ruleList[j]);
+            if(value === '') {
+                if(curRule === 'required') {
+                    ////me.focusOnError($cur);
+                    //console.log(99,value);
+                    return false;
+                }
+            }else{
+                if(curRule !== '') {
+                    if( /^length/.test(curRule) ) {
+                        var min = curRule.match(/\d+~/);
+                        var max = curRule.match(/~\d+/);
+                        min = min === null ? min : min[0].replace('~','');
+                        max = max === null ? max : max[0].replace('~','');
+                        if(min&& value.length < min) {
+                            ////me.focusOnError($cur);
+                            return false;
+                        }
+                        if(max&& value.length > max) {
+                            ////me.focusOnError($cur);
+                            return false;
+                        }
+                    }else if( /^range/.test(curRule) ) {
+                        console.log('range');
+                        var minR = curRule.match(/\d+~/);
+                        var maxR = curRule.match(/~\d+/);
+                        value = Number(value);
+                        if(isNaN(value) || value < minR[0].replace('~','') || value > maxR[0].replace('~','')) {
+                            ////me.focusOnError($cur);
+                            return false;
+                        }
+                    }else if( Object.prototype.toString.call( rules[curRule] ) === '[object Array]') {
+                        var reg = rules[curRule][0];
+                        if( !reg.test(value) )  {
+                            //me.focusOnError($cur);
+                            return false;
+                        }
+                    }else if( typeof rules[curRule] === 'function' ) {
+                        if( rules[curRule](value) !== true ) {
+                            //me.focusOnError($cur);
+                            return false;
+                        }
+                    //自定义正则规则
+                    }else if( /^\//.test(curRule) ) {
+                        var inputstring = curRule;
+                        var flags = inputstring.replace(/.*\/([gimy]*)$/, '$1');
+                        var pattern = inputstring.replace(new RegExp('^/(.*?)/'+flags+'$'), '$1');
+                        var cReg = new RegExp(pattern, flags);
+                        //console.log(curRule, value);
+                        if(!cReg.test(value)) {
+                            //me.focusOnError($cur);
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return true;
+};

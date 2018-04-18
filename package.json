@@ -1,31 +1,5 @@
 {
   "devDependencies": {
-    "css-loader": "^0.28.11",
-    "file-loader": "^1.1.11",
-    "html-webpack-plugin": "^3.1.0",
-    "md5": "^2.2.1",
-    "raw-loader": "^0.5.1",
-    "react-hot-loader": "^4.0.0",
-    "react-router": "^4.2.0",
-    "react-router-dom": "^4.2.2",
-    "style-loader": "^0.20.3",
-    "stylus": "^0.54.5",
-    "stylus-loader": "^3.0.2",
-    "uglifyjs-webpack-plugin": "^1.2.4",
-    "webpack": "^4.4.1",
-    "webpack-cli": "^2.0.13",
-    "webpack-dev-server": "^3.1.1"
-  },
-  "scripts": {
-    "webpack": "webpack --progress --colors --env=dist",
-    "start": "node server.js --env=dev",
-    "copy": "copyfiles -f ./src/index.html ./src/favicon.ico  ./dist & copyfiles -f ./src/styles/base.css ./dist/styles",
-    "dev": "webpack-dev-server --inline --env=dev",
-    "dist": "npm run copy & npm run webpack"
-  },
-  "dependencies": {
-    "antd": "^3.4.1",
-    "axios": "^0.18.0",
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.4",
     "babel-polyfill": "^6.26.0",
@@ -33,13 +7,39 @@
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
     "copyfiles": "^2.0.0",
-    "css-raw-loader": "^0.1.2",
-    "history": "^4.7.2",
-    "react": "^16.3.1",
-    "react-dom": "^16.3.1",
-    "react-redux": "^5.0.7",
-    "redux": "^3.7.2",
+    "css-loader": "^0.28.11",
+    "file-loader": "^1.1.11",
+    "html-webpack-plugin": "^3.2.0",
+    "react-hot-loader": "^3.1.3",
+    "style-loader": "^0.20.3",
     "stylus": "^0.54.5",
-    "webpack-body-parser": "^1.11.110"
+    "stylus-loader": "^3.0.2",
+    "uglifyjs-webpack-plugin": "^1.2.4",
+    "webpack": "^4.6.0",
+    "webpack-body-parser": "^1.11.110",
+    "webpack-cli": "^2.0.14",
+    "webpack-dev-server": "^3.1.3"
+  },
+  "scripts": {
+    "webpack": "webpack --progress --colors --env=dist",
+    "start": "node server.js --env=dev",
+    "copy": "copyfiles -f ./src/index.html ./src/favicon.ico  ./dist & copyfiles -f ./src/styles/base.css ./src/styles/antd.css ./dist/styles",
+    "dev": "webpack-dev-server --env=dev",
+    "test": "webpack-dev-server --env=test",
+    "dist": "npm run copy & npm run webpack",
+    "installbabel": "npm cache clean --force & cnpm i --save-dev babel-core babel-loader babel-polyfill babel-preset-es2015 babel-preset-react babel-preset-stage-0",
+    "install": "npm cache clean --force & cnpm i --save-dev copyfiles@2 webpack webpack-cli webpack-dev-server & cnpm i --save-dev style-loader css-loader stylus-loader stylus & cnpm i --save-dev file-loader & cnpm i --save-dev react-hot-loader@3 & cnpm i --save react react-dom history react-router react-router-dom redux react-redux axios antd md5 & cnpm i --save-dev uglifyjs-webpack-plugin webpack-body-parser html-webpack-plugin"
+  },
+  "dependencies": {
+    "antd": "^3.4.1",
+    "axios": "^0.18.0",
+    "history": "^4.7.2",
+    "md5": "^2.2.1",
+    "react": "^16.3.2",
+    "react-dom": "^16.3.2",
+    "react-redux": "^5.0.7",
+    "react-router": "^4.2.0",
+    "react-router-dom": "^4.2.2",
+    "redux": "^3.7.2"
   }
 }

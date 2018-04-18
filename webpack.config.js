@@ -11,6 +11,15 @@ module.exports = {
     entry: envConfig.entry,
     mode: 'development',
     output: envConfig.output,
+    /*output: {
+        path: path.resolve(__dirname, 'dist'),
+        filename: '[name].js',
+        publicPath:'dist/'
+    },*/
+    /*output: {
+        path: path.resolve(__dirname, 'dist'),
+        filename: 'bundle.js',
+    },*/
     module: envConfig.module,
     devtool: envConfig.devtool,
     devServer: {
@@ -49,7 +58,8 @@ module.exports = {
             }
 
         }],
-        host: defaultSettings.ip,
+        //host: defaultSettings.ip,
+        contentBase: env === 'test' ? envConfig.devServer.contentBase : '',
         historyApiFallback: false,
         compress: true,
         hot: true,
@@ -59,16 +69,16 @@ module.exports = {
     resolve: {
         extensions: ['.js', '.jsx', '.styl'],
         alias: {
-          globalComponents: `${defaultSettings.srcPath}/globalComponents/`,
-          sources: `${defaultSettings.srcPath}/sources/`,
-          stores: `${defaultSettings.srcPath}/stores/`,
-          styles: `${defaultSettings.srcPath}/styles/`,
-          config: `${defaultSettings.srcPath}/config/` + process.env.REACT_WEBPACK_ENV,
-          request: `${defaultSettings.srcPath}/util/request`,
-          tool: `${defaultSettings.srcPath}/util/tool`,
-          projectTool: `${defaultSettings.srcPath}/util/projectTool`,
-          form: `${defaultSettings.srcPath}/globalComponents/form`,
-          'react/lib/ReactMount': 'react-dom/lib/ReactMount'
+            globalComponents: `${defaultSettings.srcPath}/globalComponents/`,
+            sources: `${defaultSettings.srcPath}/sources/`,
+            stores: `${defaultSettings.srcPath}/stores/`,
+            styles: `${defaultSettings.srcPath}/styles/`,
+            config: `${defaultSettings.srcPath}/config/` + process.env.REACT_WEBPACK_ENV,
+            request: `${defaultSettings.srcPath}/util/request`,
+            tool: `${defaultSettings.srcPath}/util/tool`,
+            projectTool: `${defaultSettings.srcPath}/util/projectTool`,
+            form: `${defaultSettings.srcPath}/globalComponents/form`,
+            'react/lib/ReactMount': 'react-dom/lib/ReactMount'
         }
     },
     plugins: envConfig.plugins

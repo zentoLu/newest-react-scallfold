@@ -11,7 +11,7 @@ let config = {
     },
     mode: 'production',
     output: {
-        path: path.resolve(__dirname, 'dist'),
+        path: path.resolve(__dirname, '../dist'),
         filename: '[name].js',
         publicPath:'dist/'
     },
