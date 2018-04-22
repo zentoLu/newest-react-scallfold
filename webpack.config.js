@@ -9,7 +9,7 @@ let envConfig = require(path.join(__dirname, 'cfg/' + env));
 
 module.exports = {
     entry: envConfig.entry,
-    mode: 'development',
+    mode: env !== 'dist' ? 'development' : 'production',
     output: envConfig.output,
     /*output: {
         path: path.resolve(__dirname, 'dist'),
@@ -30,6 +30,7 @@ module.exports = {
         proxy: [{
             context: ["/user/", "/front/", "/cust/"],
             target: {host: defaultSettings.ip || '172.20.10.105', protocol: 'http:', port: 80},
+            //target: {host: '172.20.10.105', protocol: 'http:', port: 80},
             secure: false,
             ingorePath: false,
             changeOrigin: true,
@@ -39,9 +40,15 @@ module.exports = {
 
                     // URI encode JSON object
                     body = Object.keys( body ).map(function( key ) {
-                        return encodeURIComponent( key ) + '=' + encodeURIComponent( body[ key ])
+                        var value = body[ key ];
+                        if(typeof value === 'object' && value !== null) {
+                            value = JSON.stringify(value);
+                        }else{
+                            value = encodeURI( body[ key ])
+                        }
+                        return encodeURI( key ) + '=' + value
                     }).join('&');
-
+                    console.log(body);
                     // Update header
                     proxyReq.setHeader( 'content-type', 'application/x-www-form-urlencoded' );
                     proxyReq.setHeader( 'content-length', body.length );
@@ -53,13 +60,13 @@ module.exports = {
             },
             pathRewrite:function(path, req) {
                 console.log('\n-------------------------------');
-                console.log(req.header,path);
+                console.log(req.body,path);
                 return path;
             }
 
         }],
-        //host: defaultSettings.ip,
-        contentBase: env === 'test' ? envConfig.devServer.contentBase : '',
+        host: defaultSettings.ip,
+        contentBase: env === 'test' ? envConfig.devServer.contentBase : './',
         historyApiFallback: false,
         compress: true,
         hot: true,

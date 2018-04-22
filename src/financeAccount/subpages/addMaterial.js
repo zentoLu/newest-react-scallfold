@@ -28,55 +28,15 @@ class AccountForm extends React.Component {
             if (!err) {
                 console.log('Received values of form: ', JSON.stringify(values));
                 this.props.dispatch(action(values));
-                let {account} = this.props;
-
-                let data = Object.assign({}, account.values, values)
-                //格式化数据
-                data = this.formatData(data, account);
-                //校验图片
+                //校验图片必填
 
 
-                ajaxPost('/front/financing.do?action=apply', data, function(d) {
-                    console.log(d);
-                });
+                location.hash = '#/confirmMaterial';
             }
         });
     }
 
-    formatData(d, account) {
-        let data = Object.assign({}, d), list = [];
-        data.idType = Number(d.isMixedCtf) === 1 ? 'C' : 'B'; //B-营业执照号（非三证合一）C-统一社会信用代码（三证合一）
-        data.smsFlowNo = account.states.msgCode.data ? account.states.msgCode.data.smsFlowNo : '';
-        data.legalIdFront = '';
-        data.legalIdBack = '';
-        data.idFront = '';
-        data.idBack = '';
-        data.busCert = '';
-        data.orgCert = '';
-        list.push({
-            imgType: '1',
-            img: d.legalIdFront
-        }, {
-            imgType: '2',
-            img: d.legalIdBack
-        }, {
-            imgType: '3',
-            img: d.idFront
-        }, {
-            imgType: '4',
-            img: d.idBack
-        }, {
-            imgType: 'A',
-            img: d.busCert
-        }, {
-            imgType: 'C',
-            img: d.orgCret
-        });
-        data.list = list;
-        data.clientType = 0;
 
-        return data;
-    }
 
     render() {
         const { getFieldsError, getFieldError, isFieldTouched } = this.props.form;
@@ -97,7 +57,7 @@ class AccountForm extends React.Component {
         };
 
         const {account, dispatch, form} = this.props;
-        const {values} = account;
+        const {values, states} = account;
         const CustomInput = (name, label, rules, placeholder) => {
             const error = isFieldTouched(name) && getFieldError(name);
             return (
@@ -115,10 +75,11 @@ class AccountForm extends React.Component {
 
         return (
             <Form onSubmit={this.handleSubmit} className="account-form">
-                <div className="cust">
+                <div className="cust form-module">
                     <div className="subtitle">企业资料录入</div>
-                    { CustomInput('custName', '企业名称', [{ required: true, message: '请输入正确的企业名称!' }], '请按营业执照填写') }
-                    <FormItem {...formItemLayout} label="是否三证合一">
+                    { CustomInput('clientName', '企业名称', [{ required: true, message: '请输入正确的企业名称!' }], '请按营业执照填写') }
+                    { CustomInput('idCode', '统一社会信用代码', [{ required: true, message: '请输入正确的统一社会信用代码!' }], '请输入社会信用代码') }
+                    {/*<FormItem {...formItemLayout} label="是否三证合一">
                         {getFieldDecorator('isMixedCtf', {
                             rules: [{ required: true, message: '请选择!' }],
                             initialValue: 1
@@ -132,18 +93,7 @@ class AccountForm extends React.Component {
                     { isMixedCtf !== 0 &&  CustomInput('idCode', '统一社会信用代码', [{ required: true, message: '请输入正确的统一社会信用代码!' }], '请输入社会信用代码') }
                     { isMixedCtf === 0 &&  CustomInput('idCode', '营业执照注册号', [{ required: true, message: '请输入正确的注册号!' }], '请按营业执照填写') }
                     { isMixedCtf === 0 &&  CustomInput('organCodeNum', '组织机构代码证', [{ rule: 'orgcode',required: true, validator: validator, message: '请输入正确的组织机构代码!' }], '请按营业执照填写') }
-                    { isMixedCtf === 0 &&  CustomInput('taxCode', '税务登记证', [{ required: true, message: '请输入正确的税务登记证!' }], '请按营业执照填写') }
-                    { CustomInput('bankAcc', '对公账号', [{ required: true, message: '请输入正确的银行卡号!' }], '请输入企业银行卡号') }
-                    { CustomInput('bankAccName', '开户银行', [{ required: true, message: '请输入正确的银行卡号!' }], '请输入企业银行卡号') }
-                    { CustomInput('officePhone', '办公电话', [{rule:'tel;required', validator: validator, required: true, message: '请输入正确的办公电话!' }], '请输入办公电话') }
-                    <FormItem {...formItemLayout} label="通讯地址">
-                        {getFieldDecorator('address', {
-                            rules: [{required: true, message: '请输入正确的通讯地址!' }],
-                            initialValue: values.address
-                        })(
-                            <Input  placeholder="请输入通讯地址" />
-                        )}
-                    </FormItem>
+                    { isMixedCtf === 0 &&  CustomInput('taxCode', '税务登记证', [{ required: true, message: '请输入正确的税务登记证!' }], '请按营业执照填写') }*/}
                     <div className="ant-row ant-form-item form-item-id">
                         <div className="ant-form-item-label ant-col-xs-24 ant-col-sm-8">
                             <label className="ant-form-item-required" >企业资料上传</label>
@@ -155,19 +105,31 @@ class AccountForm extends React.Component {
                                     <input type="file" id="busCert"  onChange={(e) => {projectTool.loadImgToBase64(e, dispatch, action)}}  name="img" accept="image/*"  />
                                     {account.values.busCert && <img src={account.values.busCert}  />}
                                 </div>
-                                <div className="org-cert fr  img-loader-box">
+                                {/*<div className="org-cert fr  img-loader-box">
                                     <input type="file" id="orgCert"  onChange={(e) => {projectTool.loadImgToBase64(e, dispatch, action)}}  name="img" accept="image/*"  />
                                     {account.values.orgCert && <img src={account.values.orgCert}  />}
-                                </div>
+                                </div>*/}
                                 <div className="id-notice">图片格式：支持jpg、gif、bmp、png格式</div>
                             </div>
                         </div>
                     </div>
+                    { CustomInput('bankAcc', '对公账号', [{ required: true, message: '请输入正确的银行卡号!' }], '请输入企业银行卡号') }
+                    { CustomInput('bankAccName', '开户银行', [{ required: true, message: '请输入正确的银行卡号!' }], '请输入企业银行卡号') }
+                    { CustomInput('officePhone', '办公电话', [{rule:'tel;required', validator: validator, required: true, message: '请输入正确的办公电话!' }], '请输入办公电话') }
+                    <FormItem {...formItemLayout} label="通讯地址">
+                        {getFieldDecorator('address', {
+                            rules: [{required: true, message: '请输入正确的通讯地址!' }],
+                            initialValue: values.address
+                        })(
+                            <Input  placeholder="请输入通讯地址" />
+                        )}
+                    </FormItem>
+
                 </div>
                 <div className="form-border-top"></div>
-                <div className="legal">
-                    <div className="subtitle">法人资料录入</div>
-                    { CustomInput('reprName', '法人姓名', [{ required: true, pattern: /^[\u0391-\uFFE5]+$/, message: '请输入正确的姓名!' }], '请输入真实姓名') }
+                <div className="legal form-module">
+                    <div className="subtitle">法定代表人资料录入</div>
+                    { CustomInput('reprName', '法定代表人姓名', [{ required: true, pattern: /^[\u0391-\uFFE5]+$/, message: '请输入正确的姓名!' }], '请输入真实姓名') }
                     { CustomInput('reprMobile', '手机号码', [{ required: true, pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号码!' }], '请输入手机号码') }
                     { CustomInput('reprIdCode', '身份证号', [{rule: 'required;idcard', required: true, validator: validator, message: '请输入正确的身份证号!' }], '请输入身份证号') }
                     <div className="ant-row ant-form-item form-item-id">
@@ -198,7 +160,7 @@ class AccountForm extends React.Component {
                     </FormItem>
                 </div>
                 <div className="btn-box clearfix">
-                    <Link  className="btn-prev" to="material">上一步</Link>
+                    <Link  className="btn-prev" to={!states.isLegal ? 'material' : 'index'}>上一步</Link>
                     <Button htmlType="submit" className="btn-next">下一步</Button>
                 </div>
             </Form>

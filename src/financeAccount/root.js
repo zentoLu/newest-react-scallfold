@@ -10,7 +10,8 @@ import { createStore } from 'redux';
 import Index from './subpages/';
 import Material from './subpages/material';
 import AddMaterial from './subpages/addMaterial.js';
-import Finish from './subpages/finish.js'
+import ConfirmMaterial from './subpages/confirmMaterial.js';
+import Finish from './subpages/finish.js';
 
 //import configureStore from '../stores/configureStore.js';
 import rootReducer from './reducers';
@@ -34,6 +35,7 @@ const RouterContainer = () => (
             <Route exact path="/index" component={Index} />
             <Route path="/material" component={Material} />
             <Route path="/addmaterial" component={AddMaterial} />
+            <Route path="/confirmMaterial" component={ConfirmMaterial} />
             <Route path="/finish" component={Finish} />
         </div>
     </Router>

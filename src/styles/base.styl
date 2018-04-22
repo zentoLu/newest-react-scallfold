@@ -32,8 +32,127 @@
 button{
     -webkit-appearance: none;
     border: none;
+    &:focus{
+        outline: none;
+    }
 }
 
+.btn{
+    font-size: 16px;
+    color: #FFFFFF;
+    text-align: center;
+    line-height: 44px;
+    background: #50C1FF;
+    border-radius: 44px;
+    cursor: pointer;
+    display: block;
+    height: 44px;
+    &:focus{
+        outline: none;
+    }
+}
+
+.ant-confirm-btns{
+    margin-top: 12px!important;
+    .ant-btn{
+        font-size: 14px;
+        color: #FFFFFF;
+        text-align: center;
+        line-height: 30px;
+        background: #50C1FF;
+        border-radius: 44px;
+        cursor: pointer;
+        display: block;
+        height: 30px;
+        width: 4em;
+    }
+}
+
+//二级页面的头部
+.header{
+    background-color: $blue;
+    color: #fff;
+    height: 80px;
+    text-align: center;
+    .title{
+        width: 300px;
+    }
+    .sub-title{
+        font-size: 20px;
+        line-height: 36px;
+        margin-top: 22px;
+        text-align: left;
+        margin-left: 50px;
+        &::before{
+            content: '';
+            position: absolute;
+            width: 1px;
+            height: 28px;
+            background: #fff;
+            margin-top: 4px;
+            margin-left: -24px;
+        }
+    }
+    .logo{
+        margin-top: 22px;
+        background: url(../img/white-logo.png) no-repeat center;
+        width: 156px;
+        height: 36px;
+        position: relative;
+        display: inline-block;
+        overflow: hidden;
+        margin-right: 50px;
+
+    }
+    .navs{
+        font-size: 0;
+        margin-top: 22px;
+        display: inline-block;
+        margin-right: 100px;
+        .nav-item{
+            font-size: 20px;
+            margin: 0 25px;
+            position: relative;
+            height: 36px;
+            text-align: center;
+            vertical-align: top;
+            &::after{
+                content: '';
+                position: relative;
+                width: 0;
+                height: 2px;
+                background: #fff;
+                display: inline-block;
+                top: -24px;
+                transition: all 0.3s;
+            }
+            &.active::after{
+                width: 100%;
+            }
+            &:hover::after{
+                width: 100%;
+            }
+        }
+        a, a:hover{
+            color: #fff;
+
+        }
+    }
+    .customer-service{
+        margin-top: 10px;
+    }
+    .icon-contact-service{
+        background: url(../img/icon-contact-service.png) no-repeat center;
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        position: relative;
+        top: 2px;
+        margin-left: 28px;
+        margin-right: 4px;
+    }
+
+}
 
 //============ 公共 ==============
 
@@ -395,7 +514,6 @@ $text-gray = #969696;
 
 /*页脚*/
 .foot{
-    margin-top: 80px;
     padding: 70px 0 40px;
     background-color: #333;
     font-size: 16px;

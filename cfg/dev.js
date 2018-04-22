@@ -5,25 +5,24 @@ const path = require('path');
 const defaultSettings =  require('./default.js');
 let config = {
     entry:{
-    financeAccount: [
-        'react-hot-loader/patch',
-        'webpack-dev-server/client?http://localhost:9000',
-        'webpack/hot/only-dev-server',
-        './src/financeAccount/financeAccount.js'
-    ] },
-    /*entry: {index: [
-                'react-hot-loader/patch',
-                'webpack-dev-server/client?http://localhost:9000',
-                'webpack/hot/only-dev-server',
-                './src/index.js']},*/
-    /*entry:{
-    financeAccount: [
-        'react-hot-loader/patch',
-        'webpack-dev-server/client?http://localhost:9000',
-        'webpack/hot/only-dev-server',
-        './src/financeAccount/financeAccount.js'
-    ] },*/
-
+        financing: [
+            'react-hot-loader/patch',
+            'webpack-dev-server/client?http://' + defaultSettings.ip + ':' + defaultSettings.port,
+            'webpack/hot/only-dev-server',
+            './src/financing/financing.js'
+        ],
+        financeAccount: [
+            'react-hot-loader/patch',
+            'webpack-dev-server/client?http://' + defaultSettings.ip + ':' + defaultSettings.port,
+            'webpack/hot/only-dev-server',
+            './src/financeAccount/financeAccount.js'
+        ],
+        index: [
+            'react-hot-loader/patch',
+            'webpack-dev-server/client?http://' + defaultSettings.ip + ':' + defaultSettings.port,
+            'webpack/hot/only-dev-server',
+            './src/index.js']
+    },
     //mode: 'development',
     output: {
         path: path.resolve(__dirname, '../dist'),
@@ -34,7 +33,7 @@ let config = {
     module: {
         rules: [
             { test: /\.css$/, use: ['style-loader', 'css-loader'] },
-            { test: /\.styl$/, loader: 'style-loader!css-loader!stylus-loader'},
+            { test: /\.styl$/, loader: 'style-loader!css-loader?sourceMap!stylus-loader?sourceMap'},
             {
                 test: /\.(js|jsx)$/,
                 exclude: /node_modules/,
@@ -47,24 +46,28 @@ let config = {
     },
     devServer: { contentBase: './'},
     plugins: [
-        /*new HtmlWebpackPlugin({
+        new HtmlWebpackPlugin({
             filename: 'index.html',
             inject: false, //注入位置'head','body',true,false
             hash: false,
             template: './src/index.html'
-        }),*/
-        /*new HtmlWebpackPlugin({
+        }),
+        new HtmlWebpackPlugin({
             filename: 'financeAccount.html',
             inject: false, //注入位置'head','body',true,false
             hash: true,
             template: './src/financeAccount/financeAccount.html'
-        }),*/
+        }),
         new HtmlWebpackPlugin({
             filename: 'financing.html',
             inject: false, //注入位置'head','body',true,false
             hash: false,
             template: './src/financing/financing.html'
         }),
+        new webpack.DefinePlugin({
+            'process.env.NODE_ENV': '"production"'
+        }),
+        new webpack.NoEmitOnErrorsPlugin(),
         new webpack.HotModuleReplacementPlugin()
     ]
 }

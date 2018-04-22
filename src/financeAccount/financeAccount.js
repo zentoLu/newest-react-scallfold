@@ -13,10 +13,10 @@ if (module.hot) {
 }
 
 function render ( RootElement ) {
-  ReactDOM.render(
-    <AppContainer>
-      <RootElement/>
-    </AppContainer>,
-    document.getElementById('app')
-  )
+    ReactDOM.render(
+        <AppContainer>
+            <RootElement/>
+        </AppContainer>,
+        document.getElementById('app')
+    )
 }

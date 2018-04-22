@@ -34,8 +34,6 @@ class AdminForm extends React.Component {
                 this.props.dispatch(action(values));
                 //校验图片
 
-
-
                 location.hash = '#/addMaterial';
             }
         });

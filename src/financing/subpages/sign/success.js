@@ -1,7 +1,7 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
 import { connect } from 'react-redux';
-
+import SubPageWarpper from 'globalComponents/common/SubPageWarpper.js'
 class SignSuccess extends React.Component {
     constructor(props) {
         super(props)
@@ -58,5 +58,8 @@ class SignSuccess extends React.Component {
     }
 }
 
-export default  SignSuccess
+export default  SubPageWarpper({
+    title: '我的理财',
+    child: SignSuccess
+});
 

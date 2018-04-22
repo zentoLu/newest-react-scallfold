@@ -1,42 +1,29 @@
-import './financing.styl';
-import React, { Component } from 'react';
-import { render } from 'react-dom';
-import { Router, Route, Link } from "react-router-dom";
-import createHashHistory from 'history/createHashHistory';
-import { Provider } from 'react-redux';
-import SignStart from './subpages/sign/start.js'
-import SignSuccess from './subpages/sign/success.js'
-import configureStore from '../stores/configureStore.js';
-import rootReducer from './reducers';
+import React from 'react'
+import ReactDOM from 'react-dom'
+import Root from './root.js'
+import { AppContainer } from 'react-hot-loader'
+import {ajaxPost} from 'request'
+render( Root )
 
-import { hot } from 'react-hot-loader'
+ajaxPost('/user/login', {
+    name: '13480704730', password: '123456zxc', type: 'GW'
+}, function(data) {
+    console.log(data);
+});
 
-var store = configureStore({}, rootReducer);
-
-console.log(module.hot);
+// Hot Module Replacement API
 if (module.hot) {
-    module.hot.accept()
+  module.hot.accept('./root.js', () => {
+    const NextRoot = require('./root.js').default;
+    render( NextRoot )
+  })
 }
 
-const customHistory = createHashHistory();
-
-const RouterContainer = () => (
-  <Router history={customHistory}>
-    <div>
-      <Route exact path="/" component={SignStart} />
-      <Route path="/sign/start" component={SignStart} />
-      <Route path="/sign/success" component={SignSuccess} />
-    </div>
-  </Router>
-);
-const App = () => <Provider store={store}><RouterContainer /></Provider>
-
-
-if (module.hot) {
-    const HotApp = hot(module)(App);
-    render(
-        <HotApp />,
-        document.getElementById('app')
-    );
+function render ( RootElement ) {
+  ReactDOM.render(
+    <AppContainer>
+      <RootElement/>
+    </AppContainer>,
+    document.getElementById('app')
+  )
 }
-

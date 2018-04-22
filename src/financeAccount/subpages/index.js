@@ -2,13 +2,14 @@ import React from 'react'
 import {Link} from 'react-router-dom'
 import { connect } from 'react-redux'
 import {ajaxPost} from 'request'
+import SubPageWarpper from 'globalComponents/common/SubPageWarpper.js'
 
 class Index extends React.Component {
     constructor(props) {
         super(props)
         //this.isLegal = this.isLegal.bind(this)
         ajaxPost('/user/login', {
-            name: '18948174517', password: '123456zxc', type: 'GW'
+            name: '13480704730', password: '123456zxc', type: 'GW'
         }, function(data) {
             console.log(data);
         });
@@ -37,14 +38,14 @@ class Index extends React.Component {
 
     render() {
         const isLegal = this.props.account.states.isLegal
-        //console.log(isLegal);
+        console.log(isLegal);
         return (
             <div className="indentityBox page-finance-account">
                 <div className="container">
                     <div className="crumbs">
                         <a href="/">首页</a>
                         <a href="javascript:;">现金盈基金</a>
-                        <a href="javascript:;">开户111</a>
+                        <a href="javascript:;">开户</a>
                     </div>
                     <div className="steps">
                         <div className="step step1"><img src={require( '../../img/confirm-indentity-icon1.png')} alt="企业理财" /></div>
@@ -75,4 +76,10 @@ class Index extends React.Component {
     }
 }
 
-export default  connect((state) => { return { account: state.account } })( Index );
+
+export default  connect((state) => { return {
+        account: state.account
+    }})( SubPageWarpper({
+        title: '我的理财',
+        child: Index
+    }));
