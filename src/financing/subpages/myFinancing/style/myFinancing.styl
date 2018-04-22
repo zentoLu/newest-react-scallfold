@@ -1,0 +1,169 @@
+@import '../../../../styles/com/vars.styl'
+
+.page-my-financing{
+    background-color: #f9f9f9;
+    line-height: 35px;
+    .aside{
+        width: 238px;
+        min-height: 622px;
+        border: 1px solid #E6E8EE;
+        background-color: #fff;
+        margin-top: 36px;
+    }
+    .indentityBox{
+        margin-left: 263px;
+    }
+    .indentityBox .container{
+        width: 100%;
+        margin: 0;
+    }
+    .title{
+        margin-bottom: 22px;
+        .main-title{
+            font-size: 16px;
+            color: #1D1D1D;
+        }
+        .sub-title{
+            font-size: 12px;
+            color: #A4A8AB;
+        }
+    }
+    .main-content-body{
+        padding: 20px 30px;
+
+    }
+    .main-content{
+        height: 430px;
+    }
+    .my-money{
+        height: 76px;
+        .money-item{
+            margin-right: 90px;
+        }
+        .item-th{
+            color: #A4A8AB;
+        }
+    }
+    .num{
+        font-size: 24px;
+        color: #F06B36;
+        font-weight: bold;
+    }
+    .unit{
+        color: #F06B36;
+        font-size: 12px;
+        font-weight: bold;
+    }
+    .notice-text{
+        font-size: 12px;
+        color: #A4A8AB;
+    }
+    .pb4{
+        padding-bottom: 4px;
+        border-bottom: $border;
+    }
+
+    .money-ontheway-label{
+        margin-top: 30px;
+    }
+    .btn-revoke{
+        margin-left: 50px;
+    }
+    .money-ontheway{
+        height: 35px;
+        margin-bottom: 21px;
+    }
+    .tabs{
+        top: 78px;
+        right: 30px;
+        width: 284px;
+        text-align: center;
+        border-left: $border;
+        padding-left: 22px;
+        .tab{
+            line-height: 30px;
+            display: inline-block;
+            font-size: 16px;
+            color: #768893;
+            padding-left: 24px;
+            padding-right: 24px;
+            &.active{
+                color: $blue;
+            }
+            &:first-child::after{
+                content: '';
+                position: absolute;
+                border-right: $border;
+                height: 16px;
+                width: 1px;
+                margin-top: 8px;
+                margin-left: 24px;
+            }
+        }
+        input{
+            border: $border;
+            text-indent: 12px;
+            width: 140px;
+            line-height: 36px;
+            display: inline-block;
+            margin-right: 10px;
+            &:focus{
+                border: none;
+                outline: none;
+            }
+        }
+        .btn-buy{
+            display: inline-block;
+            width: 100px;
+            height: 38px;
+            line-height: 38px;
+            font-size: 14px;
+            background-color: $blue;
+            color: #fff;
+            border-radius: 38px;
+        }
+    }
+    .trade-records.container{
+        margin-top: 20px;
+        .handle-filter{
+            .handle-item{
+                display: inline-block;
+                font-size: 16px;
+                color: #A4A8AB;
+                width: 80px;
+                &.active{
+                    color: #1D1D1D;
+                }
+
+                position: relative;
+                    &::after{
+                    content: '';
+                    position: absolute;
+                    border-right: $border;
+                    height: 15px;
+                    width: 1px;
+                    margin-top: 10px;
+                    margin-left: 20px;
+                }
+            }
+        }
+        .records-header{
+            padding: 8px 30px;
+            border-bottom: $border;
+            .header-right{
+                top: 8px;
+                right: 30px;
+            }
+            .date-box{
+                display: inline-block;
+            }
+            .btn-query{
+                display: inline-block;
+            }
+        }
+        .pagination-box{
+            right: 30px;
+        }
+    }
+
+}
