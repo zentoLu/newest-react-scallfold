@@ -9,6 +9,79 @@
 @import "./com/layout";
 
 
+//----短信验证弹窗----
+.ant-modal-body{
+    height: 140px;
+    box-sizing: border-box;
+    .pop-body{
+        text-align: center;
+        p{
+            color: #1D1D1D;
+            margin-bottom: 24px;
+        }
+        input{
+            border: 1px solid #E6E8EE;
+            border-radius: 4px;
+            line-height: 50px;
+            width: 180px;
+            display: inline-block;
+            height: 50px;
+        }
+        .btn-getcode{
+            color: $blue;
+            border: 1px solid #E6E8EE;
+            border-radius: 4px;
+            line-height: 50px;
+            width: 100px;
+            display: inline-block;
+            height: 48px;
+            vertical-align: top;
+            margin-left: 12px;
+            &[disabled]{
+                cursor: not-allowed;
+                color: $gray;
+            }
+        }
+    }
+    .ant-form-explain{
+        text-align: left;
+        text-indent: 2em;
+    }
+    .has-error .ant-input {
+        border-color: #ff4d4f;
+        outline: 0;
+        -webkit-box-shadow: 0 0 0 2px rgba(245, 34, 45, 0.2);
+        box-shadow: 0 0 0 2px rgba(245, 34, 45, 0.2);
+    }
+}
+.ant-modal .ant-modal-footer{
+    text-align: center;
+    border-top: none;
+    padding-top: 0;
+    padding-bottom: 24px;
+    .ant-btn{
+        box-sizing: border-box;
+        height: 44px;
+        line-height: 44px;
+        display: inline-block;
+        border-radius: 44px;
+        text-align: center;
+        width: 140px;
+    }
+    .btn-cancel{
+        color: $blue;
+        background: #fff;
+        border: 1px solid $blue;
+        margin: 0 9px;
+    }
+    .btn-ok{
+        color: #fff;
+        background: $blue;
+        margin: 0 9px;
+    }
+}
+
+//----短信验证弹窗end----
 
 //============ 工具 ==============
 

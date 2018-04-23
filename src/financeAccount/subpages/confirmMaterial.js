@@ -2,10 +2,11 @@ import React from 'react'
 import {Link} from 'react-router-dom'
 import {ajaxPost} from 'request'
 import { connect } from 'react-redux'
-import { Form, Icon, Input, Button, Radio, Checkbox, Cascader} from 'antd'
+import { Form, Icon, Input, Button, Radio, Checkbox, Cascader, Modal} from 'antd'
 import projectTool from '../../util/projectTool'
 import {validator} from '../../globalComponents/form/valid.js'
-
+import WrappedSmsForm from 'form/smsForm.js'
+import SubPageWarpper from 'globalComponents/common/SubPageWarpper.js'
 const action = function(values) {
     return {
         type: 'ACCOUNT',
@@ -19,25 +20,50 @@ const RadioGroup = Radio.Group;
 class AccountForm extends React.Component {
     constructor(props) {
         super(props);
+        this.state = { visible: false};
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
+    getCode() {
+        //const mobile = this.props.sign || '13480704730';
+        const mobile = '13480704730';
+        ajaxPost('/front/financing.do?action=msgCode', {
+            mobile: mobile, type: '02'
+        }, (data) => {
+            console.log(data);
+            this.props.dispatch({
+                type: 'STATE',
+                states: {msgCode: data}
+            })
+        });
+    }
+
+
     handleSubmit(e) {
         e.preventDefault();
-        this.props.form.validateFields((err, values) => {
-            if (!err) {
-                console.log('Received values of form: ', JSON.stringify(values));
-                this.props.dispatch(action(values));
-                let {account} = this.props;
+        this.setState({
+            visible: true,
+        });
+    }
 
-                let data = Object.assign({}, account.values, values)
+    hideModal(e) {
+        //console.log(e);
+        this.setState({
+            visible: false,
+        });
+    }
+
+    handleOk() {
+        let {account} = this.props;
+        this.props.form.validateFields(['smsCode'], (err, values) => {
+            if (!err) {
+                //console.log(values);
+                let data = Object.assign({}, account.values);
                 //格式化数据
                 data = this.formatData(data, account);
-                //校验图片
-
 
                 ajaxPost('/front/financing.do?action=apply', data, function(d) {
-                    console.log(d);
+                    location.hash = '#/finish'
                 });
             }
         });
@@ -208,6 +234,23 @@ class AccountForm extends React.Component {
                     <Link  className="btn-prev" to={states.isLegal ? 'addMaterial' : 'material'}>上一步</Link>
                     <Button htmlType="submit" className="btn-next">提交</Button>
                 </div>
+                <Modal
+                    title="短信验证"
+                    visible={this.state.visible}
+                    onOk={() => {this.handleOk()}}
+                    onCancel={() => {this.hideModal()}}
+                    width='400px'
+                    maskClosable=""
+                    footer={[
+                        <Button key="back" className="btn-cancel" onClick={() => {this.hideModal()}}>取消</Button>,
+                        <Button key="submit" className="btn-ok" onClick={() => {this.handleOk()}}>确认</Button>
+                    ]}
+                >
+                    <div className="pop-body">
+                        <p>已向管理员手机号180****1234发送一条验证码，请输入</p>
+                        <WrappedSmsForm ref="smsForm" getCode={() => {this.getCode()}} {...this.props} />
+                    </div>
+                </Modal>
             </Form>
         );
   }
@@ -217,7 +260,14 @@ const WrappedAccountForm = Form.create()(AccountForm);
 
 class ConfirmMaterial extends React.Component {
     constructor(props) {
-        super(props)
+        super(props);
+    }
+
+    hideModal(e) {
+      console.log(e);
+      this.setState({
+        visible: false,
+      });
     }
 
     render() {
@@ -259,5 +309,9 @@ class ConfirmMaterial extends React.Component {
     }
 }
 
-export default  connect((state) => { return { account: state.account } })( ConfirmMaterial );
-
+export default  connect((state) => { return {
+        account: state.account
+    }})( SubPageWarpper({
+        title: '我的理财',
+        child: ConfirmMaterial
+    }));

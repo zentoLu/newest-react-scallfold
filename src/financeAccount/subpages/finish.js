@@ -1,7 +1,7 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
 import { connect } from 'react-redux';
-// import { connect } from 'react-redux';
+import SubPageWarpper from 'globalComponents/common/SubPageWarpper.js'
 
 class Finish extends React.Component {
     constructor(props) {
@@ -51,5 +51,9 @@ class Finish extends React.Component {
     }
 }
 
-export default  connect((state) => { return { account: state.account } })( Finish );
-// export default  connect((state) => { return { Index: state.Index } }, undefined, undefined, {withRef: true})( Index );
+export default  connect((state) => { return {
+        account: state.account
+    }})( SubPageWarpper({
+        title: '我的理财',
+        child: Finish
+    }));

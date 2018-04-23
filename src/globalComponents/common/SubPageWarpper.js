@@ -1,7 +1,7 @@
 import React from 'react';
 function SubPageWarpper(option) {
     const Child = option.child;
-    console.log('sub', option);
+    //console.log('sub', option);
     return (props) => (
         <div>
             <SubHead {...option} />

@@ -12,6 +12,25 @@ class RedeemStart extends React.Component {
         this.state = { visible: false , isAgree: false}
     }
 
+    componentDidMount() {
+        ajaxPost('/front/financing.do?action=getCustInfo', {
+        }, (data) => {
+            console.log(data);
+            this.props.dispatch({
+                type: 'STATE',
+                states: {custInfo: data}
+            })
+        });
+        ajaxPost('/front/financing.do?action=queryFundInfo', {
+        }, (data) => {
+            console.log(data);
+            this.props.dispatch({
+                type: 'STATE',
+                states: {fundInfo: data}
+            })
+        });
+    }
+
     getCode() {
         //const mobile = this.props.Redeem || '13480704730';
         const mobile = '13480704730';
@@ -136,7 +155,7 @@ class RedeemStart extends React.Component {
     }
 }
 
-export default  connect((state) => { return { Redeem: state.Redeem } })(
+export default  connect((state) => { return { redeem: state.redeem } })(
 SubPageWarpper({
     title: '我的理财',
     child: RedeemStart

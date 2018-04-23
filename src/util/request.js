@@ -6,10 +6,14 @@ const serializeToUrl = (data) => Object.keys( data ).map(function( key ) {
             return encodeURIComponent( key ) + '=' + encodeURIComponent( data[ key ])
         }).join('&');
 
+
+var loading = false, load; //loading效果全局唯一，全局状态，组件
+
 export const ajaxPost = (url, data, success, error) => {
     if(!data) {ajax(url, {}, data, success)}
     var option = {
         method: 'post',
+        timeout: 120*1000,
         url: url,/*
         headers:{
             'Content-type': 'application/x-www-form-urlencoded'
@@ -25,6 +29,16 @@ export const ajaxPost = (url, data, success, error) => {
             'X-CSRF-Token': md5(token)
         }
     }
+
+    //超时处理
+    /*loading = true;
+    console.log(load);
+    var ticket = setTimeout(() => {
+        load && message.destroy();
+        if(loading) {
+            load = message.loading('加载中...', 0);
+        }
+    }, 300);*/
 
     return axios(option).then(function(response) {
         let d = response.data;
@@ -54,7 +68,7 @@ export const ajaxPost = (url, data, success, error) => {
             if(d.msg) {
                 message.error(d.msg);
             }else{
-                message.error('系统错误：'+JSON.stringify(d));
+                message.error('系统错误：' + JSON.stringify(d));
             }
 
             if(typeof error === 'function') {
@@ -64,6 +78,11 @@ export const ajaxPost = (url, data, success, error) => {
 
     }).catch(function (error) {
         message.error('系统错误：'+JSON.stringify(error));
+    }).finally(function(res) {
+        /*loading = false;
+        console.log(load);
+        setTimeout(load, 1);
+        message.destroy();*/
     });
 }
 

@@ -5,6 +5,7 @@ import { connect } from 'react-redux'
 import { Form, Icon, Input, Button, Radio, Checkbox, Cascader} from 'antd'
 import projectTool from '../../util/projectTool'
 import {validator} from '../../globalComponents/form/valid.js'
+import SubPageWarpper from 'globalComponents/common/SubPageWarpper.js'
 
 const action = function(values) {
     return {
@@ -24,7 +25,7 @@ class AccountForm extends React.Component {
 
     handleSubmit(e) {
         e.preventDefault();
-        this.props.form.validateFields((err, values) => {
+        this.props.form.validateFieldsAndScroll((err, values) => {
             if (!err) {
                 console.log('Received values of form: ', JSON.stringify(values));
                 this.props.dispatch(action(values));
@@ -35,8 +36,6 @@ class AccountForm extends React.Component {
             }
         });
     }
-
-
 
     render() {
         const { getFieldsError, getFieldError, isFieldTouched } = this.props.form;
@@ -214,5 +213,9 @@ class AddMaterial extends React.Component {
     }
 }
 
-export default  connect((state) => { return { account: state.account } })( AddMaterial );
-
+export default  connect((state) => { return {
+        account: state.account
+    }})( SubPageWarpper({
+        title: '我的理财',
+        child: AddMaterial
+    }));

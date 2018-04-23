@@ -22,6 +22,7 @@ import MyFinancing from './subpages/myFinancing/index.js';
 import FinancingQA from './subpages/financingQA/index.js';
 import rootReducer from './reducers';
 import { Modal , Button} from 'antd';
+import '../util/mock.js';
 
 var store = configureStore({}, rootReducer);
 const customHistory = createHashHistory();

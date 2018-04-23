@@ -5,16 +5,45 @@ import {ajaxPost} from 'request';
 import { message, Form, Input, Modal, Button, Checkbox } from 'antd';
 import SubPageWarpper from 'globalComponents/common/SubPageWarpper.js'
 import WrappedSmsForm from 'form/smsForm.js'
+import Tool from 'tool'
 const FormItem = Form.Item;
 class SignStart extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { visible: false , isAgree: false}
+        this.state = { visible: false , isAgree: false};
+    }
+
+    componentDidMount() {
+        ajaxPost('/front/financing.do?action=getCustInfo', {
+        }, (data) => {
+            console.log(data);
+            this.props.dispatch({
+                type: 'STATE',
+                states: {custInfo: data}
+            })
+        });
+        ajaxPost('/front/financing.do?action=queryFundInfo', {
+        }, (data) => {
+            console.log(data);
+            this.props.dispatch({
+                type: 'STATE',
+                states: {fundInfo: data}
+            })
+        });
     }
 
     getCode() {
         //const mobile = this.props.sign || '13480704730';
         const mobile = '13480704730';
+        ajaxPost('/front/financing.do?action=msgCode', {
+            mobile: mobile, type: '03'
+        }, (data) => {
+            console.log(data);
+            this.props.dispatch({
+                type: 'STATE',
+                states: {msgCode: data}
+            })
+        });
         ajaxPost('/front/financing.do?action=msgCode', {
             mobile: mobile, type: '03'
         }, (data) => {
@@ -58,10 +87,7 @@ class SignStart extends React.Component {
                     smsFlowNo: sign.states.msgCode.data ? sign.states.msgCode.data.smsFlowNo : ''
                 }, (data) => {
                     console.log(data);
-                    this.props.dispatch({
-                        type: 'STATE',
-                        states: {msgCode: data}
-                    })
+                    location.hash = '#/sign/success'
                 });
             }
         });
@@ -76,6 +102,9 @@ class SignStart extends React.Component {
 
     render() {
         console.log(this.props);
+        const {sign} = this.props;
+        const {states} = sign;
+        console.log(states);
         return (
             <div className="indentityBox">
                 <div className="container finance-account-finish">
@@ -97,7 +126,7 @@ class SignStart extends React.Component {
                         ]}
                     >
                         <div className="pop-body">
-                            <p>已向管理员手机号180****1234发送一条验证码，请输入</p>
+                            <p>已向管理员手机号{states.custInfo ? Tool.formatName(states.custInfo.data.phone) : '加载中...'}发送一条验证码，请输入</p>
                             <WrappedSmsForm ref="smsForm" getCode={() => {this.getCode()}} {...this.props} />
                         </div>
                     </Modal>
@@ -105,27 +134,27 @@ class SignStart extends React.Component {
                         <div className="sign-info">
                             <div className="sign-info-title">签约信息</div>
                             <div className="sign-info-table">
-                                <table>
+                                {states.custInfo && states.fundInfo && <table>
                                     <thead></thead>
                                     <tbody>
                                         <tr>
                                             <td>企业名称</td>
-                                            <td>金蝶互联网金融服务有限公司</td>
+                                            <td>{states.custInfo.data.clientName}</td>
                                         </tr>
                                         <tr>
                                             <td>理财注册号</td>
-                                            <td>11231</td>
+                                            <td>{states.custInfo.data.fundAcc}</td>
                                         </tr>
                                         <tr>
                                             <td>基金名称</td>
-                                            <td>民生加银现金增利货币市场基金</td>
+                                            <td>{states.fundInfo.data.result[0].prdName}</td>
                                         </tr>
                                         <tr>
                                             <td>近七日年化</td>
-                                            <td>4.2330%</td>
+                                            <td>{states.fundInfo.data.result[0].yield}</td>
                                         </tr>
                                     </tbody>
-                                </table>
+                                </table>}
                             </div>
                         </div>
                         <div className="protocol tac">

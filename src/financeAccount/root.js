@@ -13,18 +13,11 @@ import AddMaterial from './subpages/addMaterial.js';
 import ConfirmMaterial from './subpages/confirmMaterial.js';
 import Finish from './subpages/finish.js';
 
-//import configureStore from '../stores/configureStore.js';
+import configureStore from '../stores/configureStore.js';
 import rootReducer from './reducers';
+import '../util/mock.js';
 
-function configureStore(initialState) {
-    const store = createStore(
-        rootReducer,
-        initialState
-    )
-    return store
-}
-
-var store = configureStore({});
+var store = configureStore({}, rootReducer);
 
 const customHistory = createHashHistory();
 

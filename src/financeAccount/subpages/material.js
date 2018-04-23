@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { Form, Icon, Input, Button } from 'antd';
 import projectTool from '../../util/projectTool'
 import {validator} from '../../globalComponents/form/valid.js'
+import SubPageWarpper from 'globalComponents/common/SubPageWarpper.js'
 const FormItem = Form.Item;
 
 const action = function(values) {
@@ -18,9 +19,6 @@ class AdminForm extends React.Component {
     constructor(props) {
         super(props);
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.getCode = this.getCode.bind(this);
-
-
         this.props.dispatch({type: 'STATE', states: {adminFormSubmited: false}});
     }
 
@@ -39,7 +37,7 @@ class AdminForm extends React.Component {
         });
     }
 
-    getCode() {
+    /*getCode() {
         const {values} = this.props.account
         ajaxPost('/front/financing.do?action=msgCode', {
             mobile: values.mobile, type: '02'
@@ -50,7 +48,7 @@ class AdminForm extends React.Component {
                 states: {msgCode: data}
             })
         });
-    }
+    }*/
 
     render() {
         const { getFieldsError, getFieldError, isFieldTouched } = this.props.form;
@@ -94,14 +92,14 @@ class AdminForm extends React.Component {
             <Form onSubmit={this.handleSubmit} className="admin-form">
             { CustomInput('actorName', '管理员姓名', [{ required: true, pattern: /^[\u0391-\uFFE5]+$/, message: '请输入正确的姓名!' }], '请输入真实姓名') }
             { CustomInput('mobile', '手机号码', [{ required: true, pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号码!' }], '请输入手机号码') }
-            <FormItem {...formItemLayout} label="短信验证码">
+            {/*<FormItem {...formItemLayout} label="短信验证码">
                 {getFieldDecorator('smsCode', {
                     rules: [{ required: true, message: '请输入正确的短信验证码!' }],
                 })(
                     <Input  placeholder="请输入短信验证码" />
                 )}
                 <a className="btn-getcode" onClick={() => {this.getCode()}}>发送验证码</a>
-            </FormItem>
+            </FormItem>*/}
             { CustomInput('actorIdCode', '身份证号', [{ rule: 'idcard;required',required: true, message: '请输入正确的身份证号!' ,validator: validator }], '请输入身份证号') }
             <div className="ant-row ant-form-item form-item-id">
                 <div className="ant-form-item-label ant-col-xs-24 ant-col-sm-8">
@@ -184,5 +182,10 @@ class Material extends React.Component {
     }
 }
 
-export default  connect((state) => { return { account: state.account } })( Material );
+export default  connect((state) => { return {
+        account: state.account
+    }})( SubPageWarpper({
+        title: '我的理财',
+        child: Material
+    }));
 
