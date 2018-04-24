@@ -1,32 +1,50 @@
 import React from 'react';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import {ajaxPost} from 'request';
-import { message, Form, Input, Modal, Button, Checkbox } from 'antd';
+import { ajaxPost } from 'request';
+import { message, Form, Input, Modal, Button, Checkbox, Popover, Radio } from 'antd';
 import SubPageWarpper from 'globalComponents/common/SubPageWarpper.js'
 import WrappedSmsForm from 'form/smsForm.js'
+import Tool from 'tool'
 const FormItem = Form.Item;
+const RadioGroup = Radio.Group;
 class RedeemStart extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { visible: false , isAgree: false}
+        this.state = {
+            visible: false,
+            redeemMethod: 1,
+            redeemAmt: ''
+        }
     }
 
     componentDidMount() {
-        ajaxPost('/front/financing.do?action=getCustInfo', {
-        }, (data) => {
+        ajaxPost('/front/financing.do?action=getCustInfo', {}, (data) => {
             console.log(data);
             this.props.dispatch({
                 type: 'STATE',
-                states: {custInfo: data}
+                states: {
+                    custInfo: data
+                }
             })
         });
-        ajaxPost('/front/financing.do?action=queryFundInfo', {
-        }, (data) => {
+        ajaxPost('/front/financing.do?action=queryFundInfo', {}, (data) => {
             console.log(data);
             this.props.dispatch({
                 type: 'STATE',
-                states: {fundInfo: data}
+                states: {
+                    fundInfo: data
+                }
+            })
+        });
+        //基金持有份额接口
+        ajaxPost('/front/financing.do?action=queryFundPortion', {}, (data) => {
+            console.log(data);
+            this.props.dispatch({
+                type: 'STATE',
+                states: {
+                    fundPortion: data
+                }
             })
         });
     }
@@ -35,66 +53,93 @@ class RedeemStart extends React.Component {
         //const mobile = this.props.Redeem || '13480704730';
         const mobile = '13480704730';
         ajaxPost('/front/financing.do?action=msgCode', {
-            mobile: mobile, type: '03'
+            mobile: mobile,
+            type: '07'
         }, (data) => {
             console.log(data);
             this.props.dispatch({
                 type: 'STATE',
-                states: {msgCode: data}
+                states: {
+                    msgCode: data
+                }
             })
         });
     }
 
-    handleConfirm() {
-        if(this.state.isAgree) {
-            this.setState({
-              visible: true,
-            });
-        }else{
-            console.log(this.refs);
-            this.refs.checkBox.focus();
-            message.warning('请阅读并同意协议！');
-        }
+    handleInput(e) {
+        this.setState({
+            redeemAmt: e.target.value
+        });
+    }
 
+    redeemAll() {
+        this.setState({
+            redeemAmt: 500
+        });
+    }
+
+    handleConfirm() {
+        const redeemMethod = this.state.redeemMethod;
+        let maxAmt = this.props.redeem.states.fundPortion.data[redeemMethod === 1 ? 'cashAmt' : 'useVol'];
+        if (!this.state.redeemAmt) {
+            message.warning('请输入赎回金额！');
+            this.refs.inputAmt.focus();
+        } else if (isNaN(this.state.redeemAmt)) {
+            message.warning('请输入正确的赎回金额！');
+            this.refs.inputAmt.focus();
+        } else if (this.state.redeemAmt > maxAmt) {
+            message.warning('赎回金额超过最大额度！');
+            this.refs.inputAmt.focus();
+        } else {
+            this.setState({
+                visible: true,
+            });
+        }
     }
 
     hideModal(e) {
-      console.log(e);
-      this.setState({
-        visible: false,
-      });
+        console.log(e);
+        this.setState({
+            visible: false,
+        });
     }
 
     handleOk(e) {
         console.log(this.refs);
+        const { redeemMethod, redeemAmt } = this.state;
         this.refs.smsForm.validateFields((err, values) => {
             if (!err) {
                 console.log('Received values of form: ', JSON.stringify(values));
-                const {Redeem} = this.props;
-                ajaxPost('/front/financing.do?action=Redeem', {
-                    prdCode: 'test',
-                    smsCode: Redeem.values.smsCode,
-                    smsFlowNo: Redeem.states.msgCode.data ? Redeem.states.msgCode.data.smsFlowNo : ''
+                const { redeem } = this.props;
+                let url = redeemMethod === 1 ? '/front/financing.do?action=quickRedeem' : '/front/financing.do?action=commonRedeem';
+                ajaxPost(url, {
+                    prdCode: redeem.states.fundInfo.data.result[0].prdCode,
+                    vol: redeemAmt,
+                    smsCode: redeem.values.smsCode,
+                    smsFlowNo: redeem.states.msgCode.data ? redeem.states.msgCode.data.smsFlowNo : ''
                 }, (data) => {
                     console.log(data);
-                    this.props.dispatch({
-                        type: 'STATE',
-                        states: {msgCode: data}
-                    })
+                    location.hash = '#/redeem/success/' + redeemAmt;
                 });
             }
         });
     }
 
-    isAgree(e) {
-        console.log(`checked = ${e.target.checked}`);
+    methodChange(e) {
+        console.log(e.target.value);
         this.setState({
-            isAgree: e.target.checked
+            redeemMethod: e.target.value
         });
     }
 
     render() {
         console.log(this.props);
+
+        const { redeem } = this.props;
+        const { states } = redeem;
+        const redeemMethod = this.state.redeemMethod;
+        const maxAmt = redeemMethod === 1 ? 'cashAmt' : 'useVol';
+        console.log(maxAmt);
         return (
             <div className="indentityBox">
                 <div className="container finance-account-finish">
@@ -116,7 +161,7 @@ class RedeemStart extends React.Component {
                         ]}
                     >
                         <div className="pop-body">
-                            <p>已向管理员手机号180****1234发送一条验证码，请输入</p>
+                            <p>已向管理员手机号{states.custInfo ? Tool.formatName(states.custInfo.data.phone) : '加载中...'}发送一条验证码，请输入</p>
                             <WrappedSmsForm ref="smsForm" getCode={() => {this.getCode()}} {...this.props} />
                         </div>
                     </Modal>
@@ -125,28 +170,33 @@ class RedeemStart extends React.Component {
                         <div className="redeem-info">
                             <div className="info-item">
                                 <div className="item-label">赎至账户</div>
-                                <div className="item-content">
-                                    <p>金蝶互联网金融服务有限公司</p>
-                                    <p>6227 0033 2414 0554 910</p>
-                                </div>
+                                {states.custInfo && <div className="item-content">
+                                    <p>{states.custInfo.data.clientName}</p>
+                                    <p>{Tool.formatBankNo(states.custInfo.data.bankNo)}</p>
+                                </div>}
                             </div>
                             <div className="info-item">
                                 <div className="item-label">赎回金额</div>
                                 <div className="item-content relative">
-                                    <input className="redeem-input-amt" placeholder="最多可赎回500万元" />
-                                    <a className="btn-redeem-all absolute">全部赎回</a>
+                                    {states.fundPortion && <input onChange={(e) => {this.handleInput(e)}} ref="inputAmt" value={this.state.redeemAmt} className="redeem-input-amt" placeholder={'最多可赎回' + states.fundPortion.data[maxAmt] + '万元'} />}
+                                    <a className="btn-redeem-all absolute" onClick={()=>{this.redeemAll()}}>全部赎回</a>
                                 </div>
                             </div>
-                            <div className="info-item">
+                            <div className="info-item item-method">
                                 <div className="item-label">赎回方式</div>
                                 <div className="item-content relative">
-                                    <div className="redeem-method">快赎（T+0实时到账）</div>
-                                    <a  className="redeem-method-tip icon-info absolute"></a>
+                                    <RadioGroup onChange={(e) => {this.methodChange(e)}} value={this.state.redeemMethod}>
+                                        <Radio value={1} className="redeem-method">快赎（T+0实时到账）</Radio>
+                                        <Radio value={2} className="redeem-method">普通赎回（T+1到账）</Radio>
+                                        <Popover placement="rightTop" trigger="hover" content={infoContent} title="赎回规则">
+                                            <a  className="redeem-method-tip icon-info absolute"></a>
+                                        </Popover>
+                                    </RadioGroup>
                                 </div>
                             </div>
                         </div>
                         <div className="btn-box">
-                            <div className="btn btn-confirm">确认</div>
+                            <div className="btn btn-confirm" onClick={() => {this.handleConfirm()}}>确认</div>
                         </div>
                     </div>
                 </div>
@@ -155,9 +205,16 @@ class RedeemStart extends React.Component {
     }
 }
 
-export default  connect((state) => { return { redeem: state.redeem } })(
-SubPageWarpper({
-    title: '我的理财',
-    child: RedeemStart
-}));
+const infoContent = (
+    <div className="redeem-popover">
+        <p>赎回方式有快赎和普通赎回两种。</p>
+        <p>单日赎回累计金额不大于5000万，且银行垫资剩余额度大于该笔赎回额度时，默认选择快赎方式。当日15:00前操作资金将T+0实时到账，15:00之后资金将T+1到账。</p>
+        <p>其余情况将自动配置为普通赎回的方式。</p>
+    </div>
+)
 
+export default connect((state) => { return { redeem: state.redeem } })(
+    SubPageWarpper({
+        title: '我的理财',
+        child: RedeemStart
+    }));

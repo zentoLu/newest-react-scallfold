@@ -28,6 +28,9 @@
             vertical-align: top;
             border-right: $border;
         }
+        .item-method .item-content{
+            padding-top: 2px;
+        }
         .item-content{
             display: inline-block;
             width: 300px;
@@ -60,15 +63,31 @@
             }
         }
         .redeem-method{
-            line-height: 40px;
+            line-height: 26px;
             margin-left: 20px;
+        }
+        .ant-radio{
+            position: relative;
+            top: 1px;
         }
 
 
 
     }
+
     .btn-confirm{
         width: 220px;
         margin: 36px auto 60px;
     }
 }
+    .redeem-popover{
+        width: 350px;
+        font-size: 12px;
+        p{
+            margin-bottom: 16px;
+        }
+    }
+    .ant-popover .ant-popover-title{
+        line-height: 32px;
+        border-bottom: none;
+    }

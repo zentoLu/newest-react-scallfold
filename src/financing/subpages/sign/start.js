@@ -118,7 +118,7 @@ class SignStart extends React.Component {
                         visible={this.state.visible}
                         onOk={() => {this.handleOk()}}
                         onCancel={() => {this.hideModal()}}
-                        width='400px'
+                        width='428px'
                         maskClosable=""
                         footer={[
                             <Button key="back" className="btn-cancel" onClick={() => {this.hideModal()}}>取消</Button>,

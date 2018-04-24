@@ -1,13 +1,39 @@
 import React from 'react';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { ajaxPost } from 'request';
 import SubPageWarpper from 'globalComponents/common/SubPageWarpper.js'
 class RedeemSuccess extends React.Component {
     constructor(props) {
         super(props)
     }
 
+
+    componentDidMount() {
+        ajaxPost('/front/financing.do?action=getCustInfo', {}, (data) => {
+            console.log(data);
+            this.props.dispatch({
+                type: 'STATE',
+                states: {
+                    custInfo: data
+                }
+            })
+        });
+        ajaxPost('/front/financing.do?action=queryFundInfo', {}, (data) => {
+            console.log(data);
+            this.props.dispatch({
+                type: 'STATE',
+                states: {
+                    fundInfo: data
+                }
+            })
+        });
+    }
+
     render() {
+        console.log(this.props);
+        const { states } = this.props.redeem;
+        const { params } = this.props.match;
         return (
             <div className="indentityBox">
                 <div className="container finance-account-finish">
@@ -28,19 +54,19 @@ class RedeemSuccess extends React.Component {
                         <div className="redeem-info">
                             <div className="redeem-title">赎回信息</div>
                             <div className="redeem-info-table">
-                                <table>
+                                {states.custInfo && states.fundInfo && <table>
                                     <thead></thead>
                                     <tbody>
                                         <tr>
                                             <td>赎回账号</td>
-                                            <td>金蝶互联网金融服务有限公司</td>
+                                            <td>{states.custInfo.data.clientName}</td>
                                         </tr>
                                         <tr>
                                             <td>赎回金额</td>
-                                            <td>5000万元</td>
+                                            <td>{params.amt}万元</td>
                                         </tr>
                                     </tbody>
-                                </table>
+                                </table>}
                             </div>
                         </div>
                         <div className="btn-box">
@@ -53,8 +79,8 @@ class RedeemSuccess extends React.Component {
     }
 }
 
-export default  SubPageWarpper({
-    title: '我的理财',
-    child: RedeemSuccess
-});
-
+export default connect((state) => { return { redeem: state.redeem } })(
+    SubPageWarpper({
+        title: '我的理财',
+        child: RedeemSuccess
+    }));

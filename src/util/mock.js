@@ -46,14 +46,14 @@ Mock.mock('/front/financing.do?action=queryFundInfo', {
         "pageSize": "10",
         "totalNum": "19",
         "totalPage": "2",
-        "result":[{
+        "result": [{
             "issDate": "20170202",
             "prdCode": "test",
             "prdName": "测试基金",
             "currType": "156",
             "income": "11.11",
-                "yield": "11.11"
-            }]
+            "yield": "11.11"
+        }]
     }
 
 
@@ -109,8 +109,8 @@ Mock.mock('/front/financing.do?action=queryTransInfo', {
             'currType': 'RMB',
             'otherAcc': 'xxx',
             'otherAccName': 'xxxxxx',
-            'summary': '基金赎回',}
-        ]
+            'summary': '基金赎回',
+        }]
     }
 
 })
@@ -140,8 +140,8 @@ Mock.mock('/front/financing.do?action=entrustQuery', {
             'summary': 'xxx',
             'errCode': 'xxx',
             'errMsg': 'xxx',
-            'cancleFlag': 'xxx'}
-        ]
+            'cancleFlag': 'xxx'
+        }]
     }
 
 })
@@ -166,8 +166,8 @@ Mock.mock('/front/financing.do?action=dealHistoryQuery', {
             'cfmAmt': '88.88',
             'cfmVol': '13.3',
             'currType': 'RMB',
-            'summary': 'xxx'}
-        ]
+            'summary': 'xxx'
+        }]
     }
 
 })
@@ -188,34 +188,34 @@ Mock.mock('/front/financing.do?action=quickRedeem', {
     'data': {}
 })
 Mock.mock('/front/financing.do?action=revoke', {
-            'status': 200,
-            'msg': 'OK',
-            'data': {
-                'fundAcc': 'xxx',
-                'clientName': 'xxx',
-                'balance': '546546.65',
-                'summary': 'xxxx'
+    'status': 200,
+    'msg': 'OK',
+    'data': {
+        'fundAcc': 'xxx',
+        'clientName': 'xxx',
+        'balance': '546546.65',
+        'summary': 'xxxx'
 
-            }
-        })
+    }
+})
 
 Mock.mock('/front/financing.do?action=getIncome', {
-            'status': 200,
-            'msg': 'OK',
-            'data': {
-                'yesterdayIncome': '924.99',
-                'totalIncome': '991.31'
-            }
+    'status': 200,
+    'msg': 'OK',
+    'data': {
+        'yesterdayIncome': '924.99',
+        'totalIncome': '991.31'
+    }
 
-        })
+})
 
 Mock.mock('/front/financing.do?action=getCustInfo', {
     "status": 200,
-  "msg": "OK",
-  "data": {
-    "bankNo": "xx",
-    "clientName": "测试客户",
-    "fundAcc": "11",
-    "phone": "18888888888"
-   }
+    "msg": "OK",
+    "data": {
+        "bankNo": "xx",
+        "clientName": "测试客户",
+        "fundAcc": "11",
+        "phone": "18888888888"
+    }
 })

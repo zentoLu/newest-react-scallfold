@@ -29,8 +29,8 @@ module.exports = {
         },
         proxy: [{
             context: ["/user/", "/front/", "/cust/"],
-            target: {host: defaultSettings.ip || '172.20.10.105', protocol: 'http:', port: 80},
-            //target: {host: '172.20.10.105', protocol: 'http:', port: 80},
+            //target: {host: defaultSettings.ip || '172.20.10.105', protocol: 'http:', port: 80},
+            target: {host: '172.20.10.105', protocol: 'http:', port: 80},
             secure: false,
             ingorePath: false,
             changeOrigin: true,

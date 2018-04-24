@@ -1,6 +1,7 @@
-import './financing.styl';
 import '../styles/antd.css';
 import '../styles/base.styl';
+import './financing.styl';
+
 import React, { Component } from 'react';
 import { render } from 'react-dom';
 import { Router, Route, Link } from "react-router-dom";
@@ -21,7 +22,7 @@ import configureStore from '../stores/configureStore.js';
 import MyFinancing from './subpages/myFinancing/index.js';
 import FinancingQA from './subpages/financingQA/index.js';
 import rootReducer from './reducers';
-import { Modal , Button} from 'antd';
+import { Modal, Button } from 'antd';
 import '../util/mock.js';
 
 var store = configureStore({}, rootReducer);
@@ -35,9 +36,9 @@ const Root = () => (
                 <Route path="/sign/start" component={SignStart} />
                 <Route path="/sign/success" component={SignSuccess} />
                 <Route path="/redeem/start" component={RedeemStart} />
-                <Route path="/redeem/success" component={RedeemSuccess} />
+                <Route path="/redeem/success/:amt" component={RedeemSuccess} />
                 <Route path="/revoke/start" component={RevokeStart} />
-                <Route path="/revoke/success" component={RevokeSuccess} />
+                <Route path="/revoke/success/:amt" component={RevokeSuccess} />
                 <Route path="/surrender/start" component={SurrenderStart} />
                 <Route path="/surrender/success" component={SurrenderSuccess} />
                 <Route path="/myFinancing" component={MyFinancing} />
@@ -48,4 +49,3 @@ const Root = () => (
 )
 
 export default Root
-
