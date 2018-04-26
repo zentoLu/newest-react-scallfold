@@ -1,35 +1,34 @@
 import React from 'react';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import SubPageWarpper from 'globalComponents/common/SubPageWarpper.js'
-import {ajaxPost} from 'request';
+import { ajaxPost } from 'request';
+import Tool from 'tool';
 class SignSuccess extends React.Component {
     constructor(props) {
         super(props)
     }
 
     componentDidMount() {
-        ajaxPost('/front/financing.do?action=getCustInfo', {
-        }, (data) => {
+        ajaxPost('/front/financing.do?action=getCustInfo', {}, (data) => {
             console.log(data);
             this.props.dispatch({
                 type: 'STATE',
-                states: {custInfo: data}
+                states: { custInfo: data }
             })
         });
-        ajaxPost('/front/financing.do?action=queryFundInfo', {
-        }, (data) => {
+        ajaxPost('/front/financing.do?action=queryFundInfo', {}, (data) => {
             console.log(data);
             this.props.dispatch({
                 type: 'STATE',
-                states: {fundInfo: data}
+                states: { fundInfo: data }
             })
         });
     }
 
     render() {
-        const {sign} = this.props;
-        const {states} = sign;
+        const { sign } = this.props;
+        const { states } = sign;
         return (
             <div className="indentityBox">
                 <div className="container finance-sign-success">
@@ -46,7 +45,7 @@ class SignSuccess extends React.Component {
                         <p className="notice-text">请尽快通过银行柜台、在线网银等方式将资金转入以下账户中：</p>
                         {states.custInfo && <div className="account">
                             <p>对公账户：{states.custInfo.data.clientName}</p>
-                            <p>银行账号：{states.custInfo.data.bankNo}</p>
+                            <p>银行账号：{Tool.formatBankNo(states.custInfo.data.bankNo)}</p>
                         </div>}
                         {states.custInfo && states.fundInfo && <div className="sign-info">
                             <div className="sign-title">签约信息</div>
@@ -71,7 +70,7 @@ class SignSuccess extends React.Component {
                             </div>
                         </div>}
                         <div className="btn-box">
-                            <div className="btn-my-loan">查看我的理财</div>
+                            <Link to="/myFinancing" className="btn btn-my-financing">查看我的理财</Link>
                         </div>
                     </div>
                 </div>
@@ -80,9 +79,8 @@ class SignSuccess extends React.Component {
     }
 }
 
-export default  connect((state) => { return { sign: state.sign } })(
-SubPageWarpper({
-    title: '我的理财',
-    child: SignSuccess
-}));
-
+export default connect((state) => { return { sign: state.sign } })(
+    SubPageWarpper({
+        title: '我的理财',
+        child: SignSuccess
+    }));

@@ -33,7 +33,10 @@ Mock.mock('/front/financing.do?action=queryFundPortion', {
         'vol': '2',
         'useVol': '1',
         'frozenVol': '1',
-        'profit': '12.12'
+        'profit': '12.12',
+        "onwayAmt": "66.33",
+        "prdValue": "111.22",
+        "cashAmt": "86.33"
     }
 
 })
@@ -52,7 +55,7 @@ Mock.mock('/front/financing.do?action=queryFundInfo', {
             "prdName": "测试基金",
             "currType": "156",
             "income": "11.11",
-            "yield": "11.11"
+            "yield": "11.11",
         }]
     }
 
@@ -93,10 +96,66 @@ Mock.mock('/front/financing.do?action=queryTransInfo', {
         'startDate': '20180202',
         'endDate': '20180303',
         'currentPage': '1',
-        'pageSize': '10',
-        'totalNum': '19',
+        'pageSize': '3',
+        'totalNum': '28',
         'totalPage': '2',
         'result': [{
+            'clientName': '测试客户',
+            'fundAcc': 'xxx',
+            'accName': 'xxx',
+            'businCode': '104',
+            'transDate': '20180209',
+            'transTime': '083045',
+            'amt': '999.66',
+            'chgFlag': '0',
+            'postBala': '2222.22',
+            'currType': 'RMB',
+            'otherAcc': 'xxx',
+            'otherAccName': 'xxxxxx',
+            'summary': '基金赎回',
+        }, {
+            'clientName': '测试客户',
+            'fundAcc': 'xxx',
+            'accName': 'xxx',
+            'businCode': '104',
+            'transDate': '20180209',
+            'transTime': '083045',
+            'amt': '999.66',
+            'chgFlag': '0',
+            'postBala': '2222.22',
+            'currType': 'RMB',
+            'otherAcc': 'xxx',
+            'otherAccName': 'xxxxxx',
+            'summary': '基金赎回',
+        }, {
+            'clientName': '测试客户',
+            'fundAcc': 'xxx',
+            'accName': 'xxx',
+            'businCode': '104',
+            'transDate': '20180209',
+            'transTime': '083045',
+            'amt': '999.66',
+            'chgFlag': '0',
+            'postBala': '2222.22',
+            'currType': 'RMB',
+            'otherAcc': 'xxx',
+            'otherAccName': 'xxxxxx',
+            'summary': '基金赎回',
+        }, {
+            'clientName': '测试客户',
+            'fundAcc': 'xxx',
+            'accName': 'xxx',
+            'businCode': '104',
+            'transDate': '20180209',
+            'transTime': '083045',
+            'amt': '999.66',
+            'chgFlag': '0',
+            'postBala': '2222.22',
+            'currType': 'RMB',
+            'otherAcc': 'xxx',
+            'otherAccName': 'xxxxxx',
+            'summary': '基金赎回',
+        }, {
             'clientName': '测试客户',
             'fundAcc': 'xxx',
             'accName': 'xxx',
@@ -213,7 +272,7 @@ Mock.mock('/front/financing.do?action=getCustInfo', {
     "status": 200,
     "msg": "OK",
     "data": {
-        "bankNo": "xx",
+        "bankNo": "54382573429573492a",
         "clientName": "测试客户",
         "fundAcc": "11",
         "phone": "18888888888"

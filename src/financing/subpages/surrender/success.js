@@ -1,13 +1,34 @@
 import React from 'react';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import SubPageWarpper from 'globalComponents/common/SubPageWarpper.js'
+import SubPageWarpper from 'globalComponents/common/SubPageWarpper.js';
+import Tool from 'tool';
+import { ajaxPost } from 'request';
 class SurrenderSuccess extends React.Component {
     constructor(props) {
         super(props)
     }
 
+    componentDidMount() {
+        ajaxPost('/front/financing.do?action=getCustInfo', {}, (data) => {
+            console.log(data);
+            this.props.dispatch({
+                type: 'STATE',
+                states: { custInfo: data }
+            })
+        });
+        ajaxPost('/front/financing.do?action=queryFundInfo', {}, (data) => {
+            console.log(data);
+            this.props.dispatch({
+                type: 'STATE',
+                states: { fundInfo: data }
+            })
+        });
+    }
+
     render() {
+        const { surrender } = this.props;
+        const { states } = surrender;
         return (
             <div className="indentityBox">
                 <div className="container finance-account-finish">
@@ -21,13 +42,13 @@ class SurrenderSuccess extends React.Component {
                             <div className="icon-finish"></div>
                             <div className="finish-text">完成解约</div>
                         </div>
-                        <div className="notice-text">
+                        {states.custInfo && <div className="notice-text">
                             <p>账户内剩余在途资金将自动撤回至绑定账户</p>
-                            <p>金蝶互联网金融服务有限公司（6227 0033 2414 0554 910）</p>
+                            <p>{states.custInfo.data.clientName}（{Tool.formatBankNo(states.custInfo.data.bankNo)}）</p>
                             <p>如需继续进行理财，可再次进行开通基金账户</p>
-                        </div>
+                        </div>}
                         <div className="btn-box">
-                            <div className="btn btn-my-financing">查看我的理财</div>
+                            <Link to="/myFinancing" className="btn btn-my-financing">查看我的理财</Link>
                         </div>
                     </div>
                 </div>
@@ -36,8 +57,8 @@ class SurrenderSuccess extends React.Component {
     }
 }
 
-export default  SubPageWarpper({
-    title: '我的理财',
-    child: SurrenderSuccess
-});
-
+export default connect((state) => { return { surrender: state.surrender } })(
+    SubPageWarpper({
+        title: '我的理财',
+        child: SurrenderSuccess
+    }));

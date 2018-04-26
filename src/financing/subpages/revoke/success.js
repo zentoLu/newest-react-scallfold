@@ -70,7 +70,7 @@ class RedeemSuccess extends React.Component {
                             </div>
                         </div>
                         <div className="btn-box">
-                            <div className="btn btn-my-financing">查看我的理财</div>
+                            <Link to="/myFinancing" className="btn btn-my-financing">查看我的理财</Link>
                         </div>
                     </div>
                 </div>

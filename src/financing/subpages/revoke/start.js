@@ -5,6 +5,7 @@ import { ajaxPost } from 'request';
 import { message, Form, Input, Modal, Button, Checkbox, Popover, Radio } from 'antd';
 import SubPageWarpper from 'globalComponents/common/SubPageWarpper.js'
 import WrappedSmsForm from 'form/smsForm.js'
+import Tool from 'tool';
 const FormItem = Form.Item;
 const RadioGroup = Radio.Group;
 class RevokeStart extends React.Component {
@@ -36,11 +37,20 @@ class RevokeStart extends React.Component {
                 }
             })
         });
+        //基金持有份额接口
+        ajaxPost('/front/financing.do?action=queryFundPortion', {}, (data) => {
+            console.log(data);
+            this.props.dispatch({
+                type: 'STATE',
+                states: {
+                    fundPortion: data
+                }
+            })
+        });
     }
 
     getCode() {
-        //const mobile = this.props.Revoke || '13480704730';
-        const mobile = '13480704730';
+        const mobile = this.props.revoke.states.custInfo.data.phone;
         ajaxPost('/front/financing.do?action=msgCode', {
             mobile: mobile,
             type: '05'
@@ -63,18 +73,29 @@ class RevokeStart extends React.Component {
 
     revokeAll() {
         this.setState({
-            revokeAmt: 500
+            revokeAmt: this.calMaxAmt()
         });
     }
 
+    calMaxAmt() {
+        let maxAmt = this.props.revoke.states.fundPortion.data.onwayAmt;
+        return maxAmt;
+    }
+
     handleConfirm() {
-        if (this.state.revokeAmt) {
+        if (!this.state.revokeAmt) {
+            message.warning('请输入撤回金额！');
+            this.refs.inputAmt.focus();
+        } else if (isNaN(this.state.revokeAmt)) {
+            message.warning('请输入正确的撤回金额！');
+            this.refs.inputAmt.focus();
+        } else if (this.state.revokeAmt > this.calMaxAmt()) {
+            message.warning('撤回金额超过最大额度！');
+            this.refs.inputAmt.focus();
+        } else {
             this.setState({
                 visible: true,
             });
-        } else {
-            message.warning('请输入撤回金额！');
-            this.refs.inputAmt.focus();
         }
     }
 
@@ -94,7 +115,8 @@ class RevokeStart extends React.Component {
                 const { revoke } = this.props;
                 ajaxPost('/front/financing.do?action=revoke', {
                     prdCode: revoke.states.fundInfo.data.result[0].prdCode,
-                    vol: revokeAmt,
+                    amt: revokeAmt,
+                    bankAcc: revoke.states.custInfo.data.bankNo,
                     smsCode: revoke.values.smsCode,
                     smsFlowNo: revoke.states.msgCode.data ? revoke.states.msgCode.data.smsFlowNo : ''
                 }, (data) => {
@@ -121,6 +143,8 @@ class RevokeStart extends React.Component {
 
     render() {
         console.log(this.props);
+        const { revoke } = this.props;
+        const { states } = revoke;
         return (
             <div className="indentityBox">
                 <div className="container finance-account-finish">
@@ -149,17 +173,17 @@ class RevokeStart extends React.Component {
                     <div className="page-revoke">
                         <h3 className="revoke-title">撤回资金</h3>
                         <div className="revoke-info">
-                            <div className="info-item">
+                            {states.custInfo && <div className="info-item">
                                 <div className="item-label">撤回账户</div>
                                 <div className="item-content">
-                                    <p>金蝶互联网金融服务有限公司</p>
-                                    <p>6227 0033 2414 0554 910</p>
+                                    <p>{states.custInfo.data.clientName}</p>
+                                    <p>{Tool.formatBankNo(states.custInfo.data.bankNo)}</p>
                                 </div>
-                            </div>
+                            </div>}
                             <div className="info-item">
                                 <div className="item-label">撤回金额</div>
                                 <div className="item-content relative">
-                                    <input onChange={(e) => {this.handleInput(e)}} ref="inputAmt" value={this.state.revokeAmt} className="revoke-input-amt" placeholder="最多可撤回500万元" />
+                                    {states.fundPortion && <input onChange={(e) => {this.handleInput(e)}} ref="inputAmt" value={this.state.revokeAmt} className="revoke-input-amt" placeholder={'最多可撤回' + this.calMaxAmt() + '万元'} />}
                                     <a className="btn-revoke-all absolute" onClick={()=>{this.revokeAll()}}>全部撤回</a>
                                 </div>
                             </div>

@@ -46,15 +46,18 @@ class SmsForm extends React.Component {
     }
 }
 
-const WrappedSmsForm = Form.create({
-    onValuesChange(props, value) {
-        console.log(props,value);
-        props.dispatch({
-            type: 'SIGN',
-            values: {smsCode: value.smsCode}
-        });
-    }
-})(SmsForm);
+// const WrappedSmsForm = Form.create({
+//     onValuesChange(props, value) {
+//         console.log(props,value);
+//         props.dispatch({
+//             type: 'SIGN',
+//             values: {smsCode: value.smsCode}
+//         });
+//     }
+// })(SmsForm);
+
+const WrappedSmsForm = Form.create()(SmsForm);
+
 
 export default  WrappedSmsForm;
 

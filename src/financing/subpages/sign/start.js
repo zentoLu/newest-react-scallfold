@@ -1,7 +1,7 @@
 import React from 'react';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import {ajaxPost} from 'request';
+import { ajaxPost } from 'request';
 import { message, Form, Input, Modal, Button, Checkbox } from 'antd';
 import SubPageWarpper from 'globalComponents/common/SubPageWarpper.js'
 import WrappedSmsForm from 'form/smsForm.js'
@@ -10,57 +10,46 @@ const FormItem = Form.Item;
 class SignStart extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { visible: false , isAgree: false};
+        this.state = { visible: false, isAgree: false };
     }
 
     componentDidMount() {
-        ajaxPost('/front/financing.do?action=getCustInfo', {
-        }, (data) => {
+        ajaxPost('/front/financing.do?action=getCustInfo', {}, (data) => {
             console.log(data);
             this.props.dispatch({
                 type: 'STATE',
-                states: {custInfo: data}
+                states: { custInfo: data }
             })
         });
-        ajaxPost('/front/financing.do?action=queryFundInfo', {
-        }, (data) => {
+        ajaxPost('/front/financing.do?action=queryFundInfo', {}, (data) => {
             console.log(data);
             this.props.dispatch({
                 type: 'STATE',
-                states: {fundInfo: data}
+                states: { fundInfo: data }
             })
         });
     }
 
     getCode() {
-        //const mobile = this.props.sign || '13480704730';
-        const mobile = '13480704730';
+        const mobile = this.props.sign.states.custInfo.data.phone;
         ajaxPost('/front/financing.do?action=msgCode', {
-            mobile: mobile, type: '03'
+            mobile: mobile,
+            type: '03'
         }, (data) => {
             console.log(data);
             this.props.dispatch({
                 type: 'STATE',
-                states: {msgCode: data}
-            })
-        });
-        ajaxPost('/front/financing.do?action=msgCode', {
-            mobile: mobile, type: '03'
-        }, (data) => {
-            console.log(data);
-            this.props.dispatch({
-                type: 'STATE',
-                states: {msgCode: data}
+                states: { msgCode: data }
             })
         });
     }
 
     handleConfirm() {
-        if(this.state.isAgree) {
+        if (this.state.isAgree) {
             this.setState({
-              visible: true,
+                visible: true,
             });
-        }else{
+        } else {
             console.log(this.refs);
             this.refs.checkBox.focus();
             message.warning('请阅读并同意协议！');
@@ -69,10 +58,10 @@ class SignStart extends React.Component {
     }
 
     hideModal(e) {
-      console.log(e);
-      this.setState({
-        visible: false,
-      });
+        console.log(e);
+        this.setState({
+            visible: false,
+        });
     }
 
     handleOk(e) {
@@ -80,10 +69,10 @@ class SignStart extends React.Component {
         this.refs.smsForm.validateFields((err, values) => {
             if (!err) {
                 console.log('Received values of form: ', JSON.stringify(values));
-                const {sign} = this.props;
+                const { sign } = this.props;
                 ajaxPost('/front/financing.do?action=sign', {
-                    prdCode: 'test',
-                    smsCode: sign.values.smsCode,
+                    prdCode: sign.states.fundInfo.data.result[0].prdCode,
+                    smsCode: values.smsCode,
                     smsFlowNo: sign.states.msgCode.data ? sign.states.msgCode.data.smsFlowNo : ''
                 }, (data) => {
                     console.log(data);
@@ -102,8 +91,8 @@ class SignStart extends React.Component {
 
     render() {
         console.log(this.props);
-        const {sign} = this.props;
-        const {states} = sign;
+        const { sign } = this.props;
+        const { states } = sign;
         console.log(states);
         return (
             <div className="indentityBox">
@@ -184,9 +173,8 @@ class SignStart extends React.Component {
     }
 }
 
-export default  connect((state) => { return { sign: state.sign } })(
-SubPageWarpper({
-    title: '我的理财',
-    child: SignStart
-}));
-
+export default connect((state) => { return { sign: state.sign } })(
+    SubPageWarpper({
+        title: '我的理财',
+        child: SignStart
+    }));

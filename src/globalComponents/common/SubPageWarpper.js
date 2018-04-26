@@ -1,4 +1,5 @@
 import React from 'react';
+
 function SubPageWarpper(option) {
     const Child = option.child;
     //console.log('sub', option);
@@ -19,11 +20,11 @@ const SubHead = (props) => {
         nav: 'index',
         cnName: '官网首页',
         link: '/'
-    } , {
+    }, {
         nav: 'financing',
         cnName: '企业理财',
         link: '/financing.html#/'
-    } , {
+    }, {
         nav: 'financingQA',
         cnName: '常见问题',
         link: '/financing.html#/financingQA/1'
@@ -39,7 +40,7 @@ const SubHead = (props) => {
                     <div className="hotline inline-block">客服热线：4008 830 822</div>
                     <div className="contact inline-block">
                         <span className="icon-contact-service"></span>
-                        <span className="service-text">在线客服</span>
+                        <a href="http://wpa.b.qq.com/cgi/wpa.php?ln=1&key=XzkzODAzNDI3MV8yODI5NzZfNDAwODgzMDgyMl8yXw" className="service-text" title="在线客服" target="_blank">在线客服</a>
                     </div>
                 </div>
                 <div className="navs">
@@ -56,7 +57,7 @@ const SubHead = (props) => {
 }
 
 const Foot = () => (
-        <div className="foot">
+    <div className="foot">
             <div className="container">
                 <div className="footer-content clearfix">
                     <div className="footer-about">

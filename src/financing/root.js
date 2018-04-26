@@ -21,31 +21,37 @@ import SurrenderSuccess from './subpages/surrender/success.js';
 import configureStore from '../stores/configureStore.js';
 import MyFinancing from './subpages/myFinancing/index.js';
 import FinancingQA from './subpages/financingQA/index.js';
+import Manage from './subpages/manage/manage.js';
 import rootReducer from './reducers';
 import { Modal, Button } from 'antd';
 import '../util/mock.js';
+import { LocaleProvider } from 'antd';
+import zh_CN from 'antd/lib/locale-provider/zh_CN';
 
 var store = configureStore({}, rootReducer);
 const customHistory = createHashHistory();
 
 const Root = () => (
-    <Provider store={store}>
-        <Router history={customHistory}>
-            <div>
-                <Route exact path="/" component={SignStart} />
-                <Route path="/sign/start" component={SignStart} />
-                <Route path="/sign/success" component={SignSuccess} />
-                <Route path="/redeem/start" component={RedeemStart} />
-                <Route path="/redeem/success/:amt" component={RedeemSuccess} />
-                <Route path="/revoke/start" component={RevokeStart} />
-                <Route path="/revoke/success/:amt" component={RevokeSuccess} />
-                <Route path="/surrender/start" component={SurrenderStart} />
-                <Route path="/surrender/success" component={SurrenderSuccess} />
-                <Route path="/myFinancing" component={MyFinancing} />
-                <Route path="/financingQA/:qid" component={FinancingQA} />
-            </div>
-        </Router>
-    </Provider>
+    <LocaleProvider locale={zh_CN}>
+        <Provider store={store}>
+            <Router history={customHistory}>
+                <div>
+                    <Route exact path="/" component={SignStart} />
+                    <Route path="/sign/start" component={SignStart} />
+                    <Route path="/sign/success" component={SignSuccess} />
+                    <Route path="/redeem/start" component={RedeemStart} />
+                    <Route path="/redeem/success/:amt" component={RedeemSuccess} />
+                    <Route path="/revoke/start" component={RevokeStart} />
+                    <Route path="/revoke/success/:amt" component={RevokeSuccess} />
+                    <Route path="/surrender/start" component={SurrenderStart} />
+                    <Route path="/surrender/success" component={SurrenderSuccess} />
+                    <Route path="/myFinancing" component={MyFinancing} />
+                    <Route path="/financingQA/:qid" component={FinancingQA} />
+                    <Route path="/manage" component={Manage} />
+                </div>
+            </Router>
+        </Provider>
+    </LocaleProvider>
 )
 
 export default Root

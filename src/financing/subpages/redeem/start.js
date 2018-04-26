@@ -50,8 +50,7 @@ class RedeemStart extends React.Component {
     }
 
     getCode() {
-        //const mobile = this.props.Redeem || '13480704730';
-        const mobile = '13480704730';
+        const mobile = this.props.redeem.states.custInfo.data.phone;
         ajaxPost('/front/financing.do?action=msgCode', {
             mobile: mobile,
             type: '07'
@@ -74,20 +73,24 @@ class RedeemStart extends React.Component {
 
     redeemAll() {
         this.setState({
-            redeemAmt: 500
+            redeemAmt: this.calMaxAmt()
         });
     }
 
-    handleConfirm() {
+    calMaxAmt() {
         const redeemMethod = this.state.redeemMethod;
         let maxAmt = this.props.redeem.states.fundPortion.data[redeemMethod === 1 ? 'cashAmt' : 'useVol'];
+        return maxAmt;
+    }
+
+    handleConfirm() {
         if (!this.state.redeemAmt) {
             message.warning('请输入赎回金额！');
             this.refs.inputAmt.focus();
         } else if (isNaN(this.state.redeemAmt)) {
             message.warning('请输入正确的赎回金额！');
             this.refs.inputAmt.focus();
-        } else if (this.state.redeemAmt > maxAmt) {
+        } else if (this.state.redeemAmt > this.calMaxAmt()) {
             message.warning('赎回金额超过最大额度！');
             this.refs.inputAmt.focus();
         } else {
@@ -115,7 +118,7 @@ class RedeemStart extends React.Component {
                 ajaxPost(url, {
                     prdCode: redeem.states.fundInfo.data.result[0].prdCode,
                     vol: redeemAmt,
-                    smsCode: redeem.values.smsCode,
+                    smsCode: values.smsCode,
                     smsFlowNo: redeem.states.msgCode.data ? redeem.states.msgCode.data.smsFlowNo : ''
                 }, (data) => {
                     console.log(data);
@@ -138,8 +141,6 @@ class RedeemStart extends React.Component {
         const { redeem } = this.props;
         const { states } = redeem;
         const redeemMethod = this.state.redeemMethod;
-        const maxAmt = redeemMethod === 1 ? 'cashAmt' : 'useVol';
-        console.log(maxAmt);
         return (
             <div className="indentityBox">
                 <div className="container finance-account-finish">
@@ -153,7 +154,7 @@ class RedeemStart extends React.Component {
                         visible={this.state.visible}
                         onOk={() => {this.handleOk()}}
                         onCancel={() => {this.hideModal()}}
-                        width='400px'
+                        width='428px'
                         maskClosable=""
                         footer={[
                             <Button key="back" className="btn-cancel" onClick={() => {this.hideModal()}}>取消</Button>,
@@ -178,7 +179,7 @@ class RedeemStart extends React.Component {
                             <div className="info-item">
                                 <div className="item-label">赎回金额</div>
                                 <div className="item-content relative">
-                                    {states.fundPortion && <input onChange={(e) => {this.handleInput(e)}} ref="inputAmt" value={this.state.redeemAmt} className="redeem-input-amt" placeholder={'最多可赎回' + states.fundPortion.data[maxAmt] + '万元'} />}
+                                    {states.fundPortion && <input onChange={(e) => {this.handleInput(e)}} ref="inputAmt" value={this.state.redeemAmt} className="redeem-input-amt" placeholder={'最多可赎回' + this.calMaxAmt() + '万元'} />}
                                     <a className="btn-redeem-all absolute" onClick={()=>{this.redeemAll()}}>全部赎回</a>
                                 </div>
                             </div>

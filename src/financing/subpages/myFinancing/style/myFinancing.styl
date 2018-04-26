@@ -3,12 +3,21 @@
 .page-my-financing{
     background-color: #f9f9f9;
     line-height: 35px;
+    .ant-table{
+        clear: none;
+    }
+    .ant-table-thead th{
+        background: #F9F9F9;
+    }
+    .ant-table tr:nth-child(even){
+        background: #FDFDFD;
+    }
     .aside{
         width: 238px;
         min-height: 622px;
         border: 1px solid #E6E8EE;
         background-color: #fff;
-        margin-top: 36px;
+        margin-top: 25px;
     }
     .indentityBox{
         margin-left: 263px;
@@ -121,22 +130,57 @@
             background-color: $blue;
             color: #fff;
             border-radius: 38px;
+            cursor: pointer;
+        }
+        .btn-sell{
+            display: inline-block;
+            width: 100px;
+            height: 38px;
+            line-height: 38px;
+            font-size: 14px;
+            background-color: #fff;
+            color: $blue;
+            border-radius: 38px;
+            box-sizing: border-box;
+            border: 1px solid $blue;
+            margin-left: 20px;
+            cursor: pointer;
         }
     }
     .trade-records.container{
         margin-top: 20px;
+        .data-label{
+            margin-right: 12px;
+        }
+        .line{
+            color: #E6E8EE;
+            text-align: center;
+            margin: 0 5px;
+        }
+        .btn-query{
+            border: 1px solid #E6E8EE;
+            border-radius: 40px;
+            height: 32px;
+            line-height: 32px;
+            color: #1D1D1D;
+            width: 72px;
+            text-align: center;
+            margin-left: 24px;
+            cursor: pointer;
+        }
         .handle-filter{
             .handle-item{
                 display: inline-block;
                 font-size: 16px;
                 color: #A4A8AB;
-                width: 80px;
-                &.active{
+                margin-right: 41px;
+                cursor: pointer;
+                &.active, &:hover{
                     color: #1D1D1D;
                 }
 
                 position: relative;
-                    &::after{
+                &::after{
                     content: '';
                     position: absolute;
                     border-right: $border;
@@ -144,6 +188,9 @@
                     width: 1px;
                     margin-top: 10px;
                     margin-left: 20px;
+                }
+                &:last-child::after{
+                    height: 0;
                 }
             }
         }
@@ -161,8 +208,45 @@
                 display: inline-block;
             }
         }
-        .pagination-box{
-            right: 30px;
+        .records-body{
+            th:first-child, td:first-child{
+                padding-left: 30px;
+            }
+        }
+        .trans-time{
+            font-size: 12px;
+            color: #A4A8AB;
+            margin-left: 4px;
+        }
+        .ant-table td{
+            color: #1D1D1D;
+        }
+        .ant-pagination-item{
+            box-sizing: border-box;
+            border: 1px solid #E6E8EE;
+            border-radius: 0;
+            a{
+                color: #A4A8AB;
+            }
+
+        }
+        .ant-pagination-item-active, .ant-pagination-item:hover{
+            background: $blue;
+            border: none;
+            a{
+                color: #fff;
+            }
+        }
+        .ant-pagination-prev, .ant-pagination-next, .ant-pagination-item-link{
+            border-radius: 0;
+        }
+        .ant-pagination-total-text{
+            margin-right: 12px;
+        }
+        .ant-pagination{
+            margin-right: 30px;
+            margin-top: 32px;
+            margin-bottom: 32px;
         }
     }
 
