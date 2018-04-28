@@ -34,8 +34,8 @@ Mock.mock('/front/financing.do?action=queryFundPortion', {
         'useVol': '1',
         'frozenVol': '1',
         'profit': '12.12',
-        "onwayAmt": "66.33",
-        "prdValue": "111.22",
+        "onwayAmt": "0",
+        "prdValue": "0",
         "cashAmt": "86.33"
     }
 

@@ -1,10 +1,10 @@
 import React from 'react'
-import {Link} from 'react-router-dom'
-import {ajaxPost} from 'request'
+import { Link } from 'react-router-dom'
+import { ajaxPost } from 'request'
 import { connect } from 'react-redux';
 import { Form, Icon, Input, Button } from 'antd';
 import projectTool from '../../util/projectTool'
-import {validator} from '../../globalComponents/form/valid.js'
+import { validator } from '../../globalComponents/form/valid.js'
 import SubPageWarpper from 'globalComponents/common/SubPageWarpper.js'
 const FormItem = Form.Item;
 
@@ -19,12 +19,12 @@ class AdminForm extends React.Component {
     constructor(props) {
         super(props);
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.props.dispatch({type: 'STATE', states: {adminFormSubmited: false}});
+        this.props.dispatch({ type: 'STATE', states: { adminFormSubmited: false } });
     }
 
     handleSubmit(e) {
         e.preventDefault();
-        this.props.dispatch({type: 'STATE', states: {adminFormSubmited: true}});
+        this.props.dispatch({ type: 'STATE', states: { adminFormSubmited: true } });
         this.props.form.validateFields((err, values) => {
             if (!err) {
                 console.log('Received values of form: ', JSON.stringify(values));
@@ -37,23 +37,10 @@ class AdminForm extends React.Component {
         });
     }
 
-    /*getCode() {
-        const {values} = this.props.account
-        ajaxPost('/front/financing.do?action=msgCode', {
-            mobile: values.mobile, type: '02'
-        }, (data) => {
-            console.log(data);
-            this.props.dispatch({
-                type: 'STATE',
-                states: {msgCode: data}
-            })
-        });
-    }*/
-
     render() {
         const { getFieldsError, getFieldError, isFieldTouched } = this.props.form;
-        const {dispatch, account} = this.props;
-        const {states} = account;
+        const { dispatch, account } = this.props;
+        const { states } = account;
         const decorator = this.props.form.getFieldDecorator;
         let getFieldDecorator = (name, option) => {
             //option.validateTrigger = states.adminFormSubmited ? 'onChange' : 'onSubmit';
@@ -88,6 +75,7 @@ class AdminForm extends React.Component {
         }
 
         //console.log(states.adminFormSubmited);
+        console.log(account.values);
         return (
             <Form onSubmit={this.handleSubmit} className="admin-form">
             { CustomInput('actorName', '管理员姓名', [{ required: true, pattern: /^[\u0391-\uFFE5]+$/, message: '请输入正确的姓名!' }], '请输入真实姓名') }
@@ -109,11 +97,11 @@ class AdminForm extends React.Component {
                 <div className="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
                     <div className="ant-form-item-control clearfix">
                         <div className="id-front fl img-loader-box">
-                            <input type="file" id="idFront"  onChange={(e) => {projectTool.loadImgToBase64(e, dispatch, action)}}  name="img" accept="image/*"  />
+                            <input type="file" id="idFront"  onChange={(e) => {projectTool.loadImgToCompressedBase64(e, dispatch, action)}}  name="img" accept="image/*"  />
                             {account.values.idFront && <img src={account.values.idFront}  />}
                         </div>
                         <div className="id-back fr img-loader-box">
-                            <input type="file" id="idBack"  onChange={(e) => {projectTool.loadImgToBase64(e, dispatch, action)}}  name="img" accept="image/*"  />
+                            <input type="file" id="idBack"  onChange={(e) => {projectTool.loadImgToCompressedBase64(e, dispatch, action)}}  name="img" accept="image/*"  />
                             {account.values.idBack && <img src={account.values.idBack}  />}
                         </div>
                         <div className="id-notice">图片格式：支持jpg、gif、bmp、png格式</div>
@@ -126,7 +114,7 @@ class AdminForm extends React.Component {
             </div>
           </Form>
         );
-  }
+    }
 }
 
 const WrappedAdminForm = Form.create()(AdminForm);
@@ -175,17 +163,15 @@ class Material extends React.Component {
                             <WrappedAdminForm {...this.props} />
                         </div>
                     </div>
-
                 </div>
             </div>
         )
     }
 }
 
-export default  connect((state) => { return {
-        account: state.account
-    }})( SubPageWarpper({
+
+export default connect((state) => { return { account: state.account } })(
+    SubPageWarpper({
         title: '我的理财',
         child: Material
     }));
-

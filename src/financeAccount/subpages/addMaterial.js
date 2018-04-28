@@ -1,10 +1,10 @@
 import React from 'react'
-import {Link} from 'react-router-dom'
-import {ajaxPost} from 'request'
+import { Link } from 'react-router-dom'
+import { ajaxPost } from 'request'
 import { connect } from 'react-redux'
-import { Form, Icon, Input, Button, Radio, Checkbox, Cascader} from 'antd'
+import { Form, Icon, Input, Button, Radio, Checkbox, Cascader } from 'antd'
 import projectTool from '../../util/projectTool'
-import {validator} from '../../globalComponents/form/valid.js'
+import { validator } from '../../globalComponents/form/valid.js'
 import SubPageWarpper from 'globalComponents/common/SubPageWarpper.js'
 
 const action = function(values) {
@@ -21,7 +21,29 @@ class AccountForm extends React.Component {
     constructor(props) {
         super(props);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.addressValidator = this.addressValidator.bind(this);
     }
+
+    componentDidMount() {
+        ajaxPost('/front/index.do?action=findProvice', {}, (data) => {
+            console.log(data);
+            let options = [];
+            data.data.list.map((it) => {
+                options.push({
+                    value: it.code,
+                    label: it.name,
+                    isLeaf: false
+                });
+            });
+            this.props.dispatch({
+                type: 'STATE',
+                states: {
+                    addressOptions: options
+                }
+            })
+        });
+    }
+
 
     handleSubmit(e) {
         e.preventDefault();
@@ -35,6 +57,65 @@ class AccountForm extends React.Component {
                 location.hash = '#/confirmMaterial';
             }
         });
+    }
+
+    addressValidator(rule, value, callback) {
+        const addressPrefix = this.props.account.values.addressPrefix;
+        if (!addressPrefix || addressPrefix.length === 0) {
+            callback('请选择省');
+        } else if (addressPrefix[0].children && addressPrefix[0].children.length > 0) {
+            if (!addressPrefix[1]) {
+                callback('请选择市');
+            } else if (addressPrefix[0].children && addressPrefix[1].children.length > 0) {
+                if (!addressPrefix[2]) {
+                    callback('请选择区');
+                } else {
+                    callback();
+                }
+            } else {
+                callback();
+            }
+
+        } else {
+            callback();
+        }
+
+    }
+
+    onChange(value, selectedOptions) {
+        console.log(value, selectedOptions);
+        this.props.dispatch(action({
+            addressPrefix: selectedOptions
+        }));
+    }
+
+    loadData(selectedOptions) {
+        const targetOption = selectedOptions[selectedOptions.length - 1];
+        if (/00$/.test(targetOption.value)) {
+            targetOption.loading = true;
+            ajaxPost('/front/index.do?action=findAreaByPCode', { pCode: targetOption.value }, (data) => {
+                console.log(data);
+                targetOption.loading = false;
+                let children = [];
+                data.data.list.map((it) => {
+                    children.push({
+                        value: it.code,
+                        label: it.name,
+                        isLeaf: false
+                    });
+                });
+                if (children.length > 0) {
+                    targetOption.children = children
+                }
+                this.props.dispatch({
+                    type: 'STATE',
+                    states: {
+                        addressOptions: this.props.account.states.addressOptions
+                    }
+                })
+            });
+        }
+
     }
 
     render() {
@@ -55,8 +136,8 @@ class AccountForm extends React.Component {
             },
         };
 
-        const {account, dispatch, form} = this.props;
-        const {values, states} = account;
+        const { account, dispatch, form } = this.props;
+        const { values, states } = account;
         const CustomInput = (name, label, rules, placeholder) => {
             const error = isFieldTouched(name) && getFieldError(name);
             return (
@@ -71,6 +152,8 @@ class AccountForm extends React.Component {
             )
         }
         const isMixedCtf = form.getFieldValue('isMixedCtf') || 1;
+
+        const addressOptions = states.addressOptions || [];
 
         return (
             <Form onSubmit={this.handleSubmit} className="account-form">
@@ -101,7 +184,7 @@ class AccountForm extends React.Component {
                         <div className="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
                             <div className="ant-form-item-control clearfix">
                                 <div className="business-cret fl  img-loader-box">
-                                    <input type="file" id="busCert"  onChange={(e) => {projectTool.loadImgToBase64(e, dispatch, action)}}  name="img" accept="image/*"  />
+                                    <input type="file" id="busCert"  onChange={(e) => {projectTool.loadImgToCompressedBase64(e, dispatch, action)}}  name="img" accept="image/*"  />
                                     {account.values.busCert && <img src={account.values.busCert}  />}
                                 </div>
                                 {/*<div className="org-cert fr  img-loader-box">
@@ -115,12 +198,25 @@ class AccountForm extends React.Component {
                     { CustomInput('bankAcc', '对公账号', [{ required: true, message: '请输入正确的银行卡号!' }], '请输入企业银行卡号') }
                     { CustomInput('bankAccName', '开户银行', [{ required: true, message: '请输入正确的银行卡号!' }], '请输入企业银行卡号') }
                     { CustomInput('officePhone', '办公电话', [{rule:'tel;required', validator: validator, required: true, message: '请输入正确的办公电话!' }], '请输入办公电话') }
-                    <FormItem {...formItemLayout} label="通讯地址">
+                    <FormItem  className="address-prefix-item" {...formItemLayout} label="通讯地址">
+                        {getFieldDecorator('addressPrefix', {
+                            rules: [{rule:'required', validator: this.addressValidator, required: true, message: '' }]
+                        })(
+                            <Cascader
+                                options={addressOptions}
+                                loadData={(s)=>{this.loadData(s)}}
+                                onChange={(v,s)=>{this.onChange(v,s)}}
+                                changeOnSelect
+                                placeholder="请选择省市区"
+                              />
+                        )}
+                    </FormItem>
+                    <FormItem className="address-detail-item" {...formItemLayout} label=" ">
                         {getFieldDecorator('address', {
-                            rules: [{required: true, message: '请输入正确的通讯地址!' }],
+                            rules: [{rule:'required', validator: validator, message: '请输入详细通讯地址' }],
                             initialValue: values.address
                         })(
-                            <Input  placeholder="请输入通讯地址" />
+                            <Input className="address-detail"  placeholder="请输入详细通讯地址" />
                         )}
                     </FormItem>
 
@@ -139,11 +235,11 @@ class AccountForm extends React.Component {
                         <div className="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
                             <div className="ant-form-item-control clearfix">
                                 <div className="id-front fl  img-loader-box">
-                                    <input type="file" id="legalIdFront"  onChange={(e) => {projectTool.loadImgToBase64(e, dispatch, action)}}  name="img" accept="image/*"  />
+                                    <input type="file" id="legalIdFront"  onChange={(e) => {projectTool.loadImgToCompressedBase64(e, dispatch, action)}}  name="img" accept="image/*"  />
                                     {account.values.legalIdFront && <img src={account.values.legalIdFront}  />}
                                 </div>
                                 <div className="id-back fr  img-loader-box">
-                                    <input type="file" id="legalIdBack"  onChange={(e) => {projectTool.loadImgToBase64(e, dispatch, action)}}  name="img" accept="image/*"  />
+                                    <input type="file" id="legalIdBack"  onChange={(e) => {projectTool.loadImgToCompressedBase64(e, dispatch, action)}}  name="img" accept="image/*"  />
                                     {account.values.legalIdBack && <img src={account.values.legalIdBack}  />}
                                 </div>
                                 <div className="id-notice">图片格式：支持jpg、gif、bmp、png格式</div>
@@ -164,7 +260,7 @@ class AccountForm extends React.Component {
                 </div>
             </Form>
         );
-  }
+    }
 }
 
 const WrappedAccountForm = Form.create()(AccountForm);
@@ -213,9 +309,11 @@ class AddMaterial extends React.Component {
     }
 }
 
-export default  connect((state) => { return {
+export default connect((state) => {
+    return {
         account: state.account
-    }})( SubPageWarpper({
-        title: '我的理财',
-        child: AddMaterial
-    }));
+    }
+})(SubPageWarpper({
+    title: '我的理财',
+    child: AddMaterial
+}));

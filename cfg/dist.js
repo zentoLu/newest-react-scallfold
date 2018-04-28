@@ -4,23 +4,21 @@ const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const path = require('path');
 let config = {
     entry: {
-        index:['./src/index.js'],
-        main:['./src/main.js'],
-        financing:['./src/financing/financing.js'],
-        financeAccount:['./src/financeAccount/financeAccount.js']
+        index: ['./src/index.js'],
+        financing: ['./src/financing/financing.js'],
+        financeAccount: ['./src/financeAccount/financeAccount.js']
     },
     mode: 'production',
     output: {
         path: path.resolve(__dirname, '../dist'),
         filename: '[name].js',
-        publicPath:'dist/'
+        publicPath: 'dist/'
     },
     devtool: 'eval',
     module: {
         rules: [
             { test: /\.css$/, use: ['style-loader', 'css-loader'] },
-            { test: /\.styl$/, loader: 'style-loader!css-loader!stylus-loader'},
-            {
+            { test: /\.styl$/, loader: 'style-loader!css-loader!stylus-loader' }, {
                 test: /\.(js|jsx)$/,
                 use: {
                     loader: 'babel-loader',
@@ -29,9 +27,9 @@ let config = {
                     }
                 },
                 exclude: /node_modules/
-            },
-            {
-                test: /\.(png|jpg|gif)$/i, loader: "file-loader?name=img/[name].[ext]&publicPath=./"
+            }, {
+                test: /\.(png|jpg|gif)$/i,
+                loader: "file-loader?name=img/[name].[ext]&publicPath=./"
             }
         ]
     },

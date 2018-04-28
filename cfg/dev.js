@@ -2,9 +2,9 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin'); //通过 npm 安装
 const webpack = require('webpack');
 const path = require('path');
-const defaultSettings =  require('./default.js');
+const defaultSettings = require('./default.js');
 let config = {
-    entry:{
+    entry: {
         financing: [
             'react-hot-loader/patch',
             'webpack-dev-server/client?http://' + defaultSettings.ip + ':' + defaultSettings.port,
@@ -21,7 +21,8 @@ let config = {
             'react-hot-loader/patch',
             'webpack-dev-server/client?http://' + defaultSettings.ip + ':' + defaultSettings.port,
             'webpack/hot/only-dev-server',
-            './src/index.js']
+            './src/index.js'
+        ]
     },
     //mode: 'development',
     output: {
@@ -33,18 +34,17 @@ let config = {
     module: {
         rules: [
             { test: /\.css$/, use: ['style-loader', 'css-loader'] },
-            { test: /\.styl$/, loader: 'style-loader!css-loader?sourceMap!stylus-loader?sourceMap'},
-            {
+            { test: /\.styl$/, loader: 'style-loader!css-loader?sourceMap!stylus-loader?sourceMap' }, {
                 test: /\.(js|jsx)$/,
                 exclude: /node_modules/,
                 loader: 'babel-loader'
-            },
-            {
-                test: /\.(png|jpg|gif)$/i, loader: "file-loader?name=img/[name].[ext]&publicPath=./"
+            }, {
+                test: /\.(png|jpg|gif)$/i,
+                loader: "file-loader?name=img/[name].[ext]&publicPath=./"
             }
         ]
     },
-    devServer: { contentBase: './'},
+    devServer: { contentBase: './' },
     plugins: [
         new HtmlWebpackPlugin({
             filename: 'index.html',

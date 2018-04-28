@@ -22,11 +22,11 @@ import configureStore from '../stores/configureStore.js';
 import MyFinancing from './subpages/myFinancing/index.js';
 import FinancingQA from './subpages/financingQA/index.js';
 import Manage from './subpages/manage/manage.js';
+import Index from './subpages/index/index.js';
 import rootReducer from './reducers';
-import { Modal, Button } from 'antd';
-import '../util/mock.js';
 import { LocaleProvider } from 'antd';
 import zh_CN from 'antd/lib/locale-provider/zh_CN';
+import '../util/mock.js';
 
 var store = configureStore({}, rootReducer);
 const customHistory = createHashHistory();
@@ -36,7 +36,7 @@ const Root = () => (
         <Provider store={store}>
             <Router history={customHistory}>
                 <div>
-                    <Route exact path="/" component={SignStart} />
+                    <Route exact path="/" component={Index} />
                     <Route path="/sign/start" component={SignStart} />
                     <Route path="/sign/success" component={SignSuccess} />
                     <Route path="/redeem/start" component={RedeemStart} />

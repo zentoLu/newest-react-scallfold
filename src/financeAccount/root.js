@@ -15,6 +15,8 @@ import Finish from './subpages/finish.js';
 
 import configureStore from '../stores/configureStore.js';
 import rootReducer from './reducers';
+import { LocaleProvider } from 'antd';
+import zh_CN from 'antd/lib/locale-provider/zh_CN';
 import '../util/mock.js';
 
 var store = configureStore({}, rootReducer);
@@ -22,22 +24,20 @@ var store = configureStore({}, rootReducer);
 const customHistory = createHashHistory();
 
 const RouterContainer = () => (
-    <Router history={customHistory}>
-        <div>
-            <Route exact path="/" component={Index} />
-            <Route exact path="/index" component={Index} />
-            <Route path="/material" component={Material} />
-            <Route path="/addmaterial" component={AddMaterial} />
-            <Route path="/confirmMaterial" component={ConfirmMaterial} />
-            <Route path="/finish" component={Finish} />
-        </div>
-    </Router>
+    <LocaleProvider locale={zh_CN}>
+        <Router history={customHistory}>
+            <div>
+                <Route exact path="/" component={Index} />
+                <Route exact path="/index" component={Index} />
+                <Route path="/material" component={Material} />
+                <Route path="/addmaterial" component={AddMaterial} />
+                <Route path="/confirmMaterial" component={ConfirmMaterial} />
+                <Route path="/finish" component={Finish} />
+            </div>
+        </Router>
+    </LocaleProvider>
 );
 
 const Root = () => <Provider store={store}><RouterContainer /></Provider>
 
 export default Root
-
-
-
-

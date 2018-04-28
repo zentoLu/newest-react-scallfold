@@ -10,7 +10,7 @@ import Tool from 'tool';
 import moment from 'moment';
 const FormItem = Form.Item;
 const pageSize = 6;
-console.log(moment);
+//console.log(moment);
 //const { RangePicker } = DatePicker;
 class MyFinancing extends React.Component {
     constructor(props) {
@@ -197,6 +197,7 @@ class MyFinancing extends React.Component {
             pagination = this.setPagination(transInfo);
 
         }
+
         return (
             <div className="page-my-financing">
                 <div className="container clearfix">
@@ -225,8 +226,8 @@ class MyFinancing extends React.Component {
                                 </div>*/}
                                 <div className="tabs absolute">
                                     <div className="btn-grounp">
-                                        <div className="btn-buy">买入</div>
-                                        <div className="btn-sell">赎回</div>
+                                        <Link to="/redeem/start" className="btn-sell">赎回</Link>
+                                        <Link to="/financingQA/1" className="btn-buy">买入</Link>
                                     </div>
                                 </div>
                                 <div className="my-financing-content">
@@ -238,26 +239,53 @@ class MyFinancing extends React.Component {
                                 <div className="my-money clearfix">
                                     <div className="fl money-item">
                                         <div className="item-th">持有资产（元）</div>
-                                        <div className="item-td"> <span className="num">Number(fundPortion.prdValue)</span><span className="unit">万</span> </div>
+                                        {Number(fundPortion.prdValue) !== 0 ?
+                                            <div className="item-td"> <span className="num">{Number(fundPortion.prdValue)}</span><span className="unit">万</span> </div> :
+                                            <div className="item-td">
+                                                <span className="num">暂无投资</span>
+
+                                            </div>}
                                     </div>
                                     <div className="fl money-item">
                                         <div className="item-th">昨日收益（元）</div>
-                                        <div className="item-td num">{Tool.formatMoney(states.income.data.yesterdayIncome)}</div>
+                                        <div className="item-td num">{states.income.data.yesterdayIncome > 0 ? Tool.formatMoney(states.income.data.yesterdayIncome) : '-------'}</div>
                                     </div>
                                     <div className="fl money-item">
                                         <div className="item-th">累计收益（元）</div>
-                                        <div className="item-td num">{Tool.formatMoney(states.income.data.totalIncome)}</div>
+                                        <div className="item-td num">{states.income.data.totalIncome > 0 ? Tool.formatMoney(states.income.data.totalIncome) : '-------'}</div>
                                     </div>
                                 </div>
+                                {Number(fundPortion.prdValue) === 0 &&
+                                    <div className="ant-popover-content">
+                                        <div className="ant-popover-arrow"></div>
+                                        <div className="ant-popover-inner">
+                                            <div>
+                                                <div className="ant-popover-title">
+                                                    <div className="prdValue-title">为保证理财收益，请尽快通过银行柜台、在线网银等方式将资金转入以下账户：</div>
+                                                </div>
+                                                <div className="ant-popover-inner-content">
+                                                    <div className="tip-noprd">
+                                                        <p>账户：金蝶互联网金融服务有限公司</p>
+                                                        <p>账号：123456789012</p>
+                                                        <p>支行名称：中国银行高新园支行</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
                                 <div className="notice-text pb4">* 投资收益将在每日24:00更新</div>
-                                <div className="money-ontheway-label">
-                                    在途资金（元）
-                                </div>
-                                <div className="money-ontheway">
-                                    <span className="num">{fundPortion.onwayAmt}</span><span className="unit">万</span>
-                                    <Link className="btn-revoke blue" to="/revoke/start">撤回（出金）</Link>
-                                </div>
-                                <div className="notice-text">* 在途资金将于下个工作日15:00转入基金账户中，在资金转入之前可进行撤回操作</div>
+                                {fundPortion.onwayAmt > 0 && <div>
+                                    <div className="money-ontheway-label">
+                                        在途资金（元）
+                                    </div>
+                                    <div className="money-ontheway">
+                                        <span className="num">{fundPortion.onwayAmt}</span><span className="unit">万</span>
+                                        <Link className="btn-revoke blue" to="/revoke/start">撤回（出金）</Link>
+                                    </div>
+                                    <div className="notice-text">* 在途资金将于下个工作日15:00转入基金账户中，在资金转入之前可进行撤回操作</div>
+                                </div>}
+
                             </div>}
                         </div>
                         <div className="trade-records container">

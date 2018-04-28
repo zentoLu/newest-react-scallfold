@@ -1,37 +1,32 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { ajaxPost } from 'request';
+import { ajaxPromise } from 'request';
 import { message, Form, Input, Modal, Button, Checkbox } from 'antd';
 import SubPageWarpper from 'globalComponents/common/SubPageWarpper.js'
 import WrappedSmsForm from 'form/smsForm.js'
 import Tool from 'tool'
 const FormItem = Form.Item;
+
+/*function runAsync1() {
+    var p = new Promise(function(resolve, reject) {
+        //做一些异步操作
+        setTimeout(function() {
+            console.log('异步任务1执行完成');
+            resolve('随便什么数据1');
+        }, 10 * 1000);
+    });
+    return p;
+}*/
+
 class SignStart extends React.Component {
     constructor(props) {
         super(props);
         this.state = { visible: false, isAgree: false };
     }
 
-    componentDidMount() {
-        ajaxPost('/front/financing.do?action=getCustInfo', {}, (data) => {
-            console.log(data);
-            this.props.dispatch({
-                type: 'STATE',
-                states: { custInfo: data }
-            })
-        });
-        ajaxPost('/front/financing.do?action=queryFundInfo', {}, (data) => {
-            console.log(data);
-            this.props.dispatch({
-                type: 'STATE',
-                states: { fundInfo: data }
-            })
-        });
-    }
-
     getCode() {
-        const mobile = this.props.sign.states.custInfo.data.phone;
+        const mobile = this.props.sign.custInfo.data.phone;
         ajaxPost('/front/financing.do?action=msgCode', {
             mobile: mobile,
             type: '03'
@@ -71,7 +66,7 @@ class SignStart extends React.Component {
                 console.log('Received values of form: ', JSON.stringify(values));
                 const { sign } = this.props;
                 ajaxPost('/front/financing.do?action=sign', {
-                    prdCode: sign.states.fundInfo.data.result[0].prdCode,
+                    prdCode: sign.fundInfo.data.result[0].prdCode,
                     smsCode: values.smsCode,
                     smsFlowNo: sign.states.msgCode.data ? sign.states.msgCode.data.smsFlowNo : ''
                 }, (data) => {
@@ -93,6 +88,10 @@ class SignStart extends React.Component {
         console.log(this.props);
         const { sign } = this.props;
         const { states } = sign;
+        const { initDatas } = states;
+        const custInfo = initDatas[0],
+            fundInfo = initDatas[1];
+
         console.log(states);
         return (
             <div className="indentityBox">
@@ -115,7 +114,7 @@ class SignStart extends React.Component {
                         ]}
                     >
                         <div className="pop-body">
-                            <p>已向管理员手机号{states.custInfo ? Tool.formatName(states.custInfo.data.phone) : '加载中...'}发送一条验证码，请输入</p>
+                            <p>已向管理员手机号{Tool.formatName(custInfo.data.phone)}发送一条验证码，请输入</p>
                             <WrappedSmsForm ref="smsForm" getCode={() => {this.getCode()}} {...this.props} />
                         </div>
                     </Modal>
@@ -123,27 +122,27 @@ class SignStart extends React.Component {
                         <div className="sign-info">
                             <div className="sign-info-title">签约信息</div>
                             <div className="sign-info-table">
-                                {states.custInfo && states.fundInfo && <table>
+                                <table>
                                     <thead></thead>
                                     <tbody>
                                         <tr>
                                             <td>企业名称</td>
-                                            <td>{states.custInfo.data.clientName}</td>
+                                            <td>{custInfo.data.clientName}</td>
                                         </tr>
                                         <tr>
                                             <td>理财注册号</td>
-                                            <td>{states.custInfo.data.fundAcc}</td>
+                                            <td>{custInfo.data.fundAcc}</td>
                                         </tr>
                                         <tr>
                                             <td>基金名称</td>
-                                            <td>{states.fundInfo.data.result[0].prdName}</td>
+                                            <td>{fundInfo.data.result[0].prdName}</td>
                                         </tr>
                                         <tr>
                                             <td>近七日年化</td>
-                                            <td>{states.fundInfo.data.result[0].yield}</td>
+                                            <td>{fundInfo.data.result[0].yield}</td>
                                         </tr>
                                     </tbody>
-                                </table>}
+                                </table>
                             </div>
                         </div>
                         <div className="protocol tac">
@@ -175,6 +174,15 @@ class SignStart extends React.Component {
 
 export default connect((state) => { return { sign: state.sign } })(
     SubPageWarpper({
+        /*beforeLoad: [
+            ajaxPromise('/front/financing.do?action=getCustInfo', {}, () => {}),
+            ajaxPromise('/front/financing.do?action=queryFundInfo', {}, () => {}),
+            runAsync1()
+        ],*/
+        beforeLoad: [
+            ajaxPromise('/front/financing.do?action=getCustInfo', {}, () => {}),
+            ajaxPromise('/front/financing.do?action=queryFundInfo', {}, () => {})
+        ],
         title: '我的理财',
         child: SignStart
     }));
