@@ -1,7 +1,7 @@
 import '../styles/antd.css';
 import '../styles/base.styl';
 import './financing.styl';
-
+import "babel-polyfill"
 import React, { Component } from 'react';
 import { render } from 'react-dom';
 import { Router, Route, Link } from "react-router-dom";
@@ -19,6 +19,7 @@ import RevokeSuccess from './subpages/revoke/success.js';
 import SurrenderStart from './subpages/surrender/start.js';
 import SurrenderSuccess from './subpages/surrender/success.js';
 import configureStore from '../stores/configureStore.js';
+import rootSaga from './sagas/mysaga.js'
 import MyFinancing from './subpages/myFinancing/index.js';
 import FinancingQA from './subpages/financingQA/index.js';
 import Manage from './subpages/manage/manage.js';
@@ -27,8 +28,8 @@ import rootReducer from './reducers';
 import { LocaleProvider } from 'antd';
 import zh_CN from 'antd/lib/locale-provider/zh_CN';
 import '../util/mock.js';
-
-var store = configureStore({}, rootReducer);
+console.log({ rootSaga });
+var store = configureStore({}, rootReducer, rootSaga);
 const customHistory = createHashHistory();
 
 const Root = () => (
