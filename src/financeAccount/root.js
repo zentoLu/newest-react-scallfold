@@ -17,9 +17,11 @@ import configureStore from '../stores/configureStore.js';
 import rootReducer from './reducers';
 import { LocaleProvider } from 'antd';
 import zh_CN from 'antd/lib/locale-provider/zh_CN';
-import '../util/mock.js';
+import '../util/mock1.js';
+import "babel-polyfill"
+import rootSaga from './sagas'
 
-var store = configureStore({}, rootReducer);
+var store = configureStore({}, rootReducer, rootSaga);
 
 const customHistory = createHashHistory();
 

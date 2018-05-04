@@ -29,8 +29,9 @@ module.exports = {
         },
         proxy: [{
             context: ["/user/", "/front/", "/cust/"],
-            //target: {host: defaultSettings.ip || '172.20.10.105', protocol: 'http:', port: 80},
-            target: { host: '172.20.10.105', protocol: 'http:', port: 80 },
+            //target: { host: defaultSettings.ip || '172.20.10.105', protocol: 'http:', port: 80 },
+            //target: { host: '172.20.10.105', protocol: 'http:', port: 80 },
+            target: { host: '172.20.3.140', protocol: 'http:', port: 80 },
             secure: false,
             ingorePath: false,
             changeOrigin: true,
@@ -60,7 +61,7 @@ module.exports = {
             },
             pathRewrite: function(path, req) {
                 console.log('\n-------------------------------');
-                console.log(req.body, path);
+                //console.log(req.body, path);
                 return path;
             }
 
@@ -85,6 +86,7 @@ module.exports = {
             tool: `${defaultSettings.srcPath}/util/tool`,
             projectTool: `${defaultSettings.srcPath}/util/projectTool`,
             form: `${defaultSettings.srcPath}/globalComponents/form`,
+            package: `${defaultSettings.srcPath}/globalComponents/package`,
             'react/lib/ReactMount': 'react-dom/lib/ReactMount'
         }
     },

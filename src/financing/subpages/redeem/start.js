@@ -1,16 +1,17 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { connect } from 'react-redux';
-import { ajaxPost } from 'request';
-import { message, Form, Input, Modal, Button, Checkbox, Popover, Radio } from 'antd';
+import React from 'react'
+import { Link } from 'react-router-dom'
+import { connect } from 'react-redux'
+import { ajaxPost } from 'request'
+import Tool from 'tool'
+import { message, Form, Input, Modal, Button, Checkbox, Popover, Radio } from 'antd'
 import SubPageWarpper from 'globalComponents/common/SubPageWarpper.js'
 import WrappedSmsForm from 'form/smsForm.js'
-import Tool from 'tool'
-const FormItem = Form.Item;
-const RadioGroup = Radio.Group;
+
+const FormItem = Form.Item
+const RadioGroup = Radio.Group
 class RedeemStart extends React.Component {
     constructor(props) {
-        super(props);
+        super(props)
         this.state = {
             visible: false,
             redeemMethod: 1,
@@ -20,134 +21,134 @@ class RedeemStart extends React.Component {
 
     componentDidMount() {
         ajaxPost('/front/financing.do?action=getCustInfo', {}, (data) => {
-            console.log(data);
+            console.log(data)
             this.props.dispatch({
                 type: 'STATE',
                 states: {
                     custInfo: data
                 }
             })
-        });
+        })
         ajaxPost('/front/financing.do?action=queryFundInfo', {}, (data) => {
-            console.log(data);
+            console.log(data)
             this.props.dispatch({
                 type: 'STATE',
                 states: {
                     fundInfo: data
                 }
             })
-        });
+        })
         //基金持有份额接口
         ajaxPost('/front/financing.do?action=queryFundPortion', {}, (data) => {
-            console.log(data);
+            console.log(data)
             this.props.dispatch({
                 type: 'STATE',
                 states: {
                     fundPortion: data
                 }
             })
-        });
+        })
     }
 
     getCode() {
-        const mobile = this.props.redeem.states.custInfo.data.phone;
+        const mobile = this.props.redeem.states.custInfo.data.phone
         ajaxPost('/front/financing.do?action=msgCode', {
             mobile: mobile,
             type: '07'
         }, (data) => {
-            console.log(data);
+            console.log(data)
             this.props.dispatch({
                 type: 'STATE',
                 states: {
                     msgCode: data
                 }
             })
-        });
+        })
     }
 
     handleInput(e) {
         this.setState({
             redeemAmt: e.target.value
-        });
+        })
     }
 
     redeemAll() {
         this.setState({
             redeemAmt: this.calMaxAmt()
-        });
+        })
     }
 
     calMaxAmt() {
-        const redeemMethod = this.state.redeemMethod;
-        let maxAmt = this.props.redeem.states.fundPortion.data[redeemMethod === 1 ? 'cashAmt' : 'useVol'];
-        return maxAmt;
+        const redeemMethod = this.state.redeemMethod
+        let maxAmt = this.props.redeem.states.fundPortion.data[redeemMethod === 1 ? 'cashAmt' : 'useVol']
+        return maxAmt
     }
 
     handleConfirm() {
         if (!this.state.redeemAmt) {
-            message.warning('请输入赎回金额！');
-            this.refs.inputAmt.focus();
+            message.warning('请输入赎回金额！')
+            this.refs.inputAmt.focus()
         } else if (isNaN(this.state.redeemAmt)) {
-            message.warning('请输入正确的赎回金额！');
-            this.refs.inputAmt.focus();
+            message.warning('请输入正确的赎回金额！')
+            this.refs.inputAmt.focus()
         } else if (this.state.redeemAmt > this.calMaxAmt()) {
-            message.warning('赎回金额超过最大额度！');
-            this.refs.inputAmt.focus();
+            message.warning('赎回金额超过最大额度！')
+            this.refs.inputAmt.focus()
         } else {
             this.setState({
                 visible: true,
-            });
+            })
         }
     }
 
     hideModal(e) {
-        console.log(e);
+        console.log(e)
         this.setState({
             visible: false,
-        });
+        })
     }
 
     handleOk(e) {
-        console.log(this.refs);
-        const { redeemMethod, redeemAmt } = this.state;
+        console.log(this.refs)
+        const { redeemMethod, redeemAmt } = this.state
         this.refs.smsForm.validateFields((err, values) => {
             if (!err) {
-                console.log('Received values of form: ', JSON.stringify(values));
-                const { redeem } = this.props;
-                let url = redeemMethod === 1 ? '/front/financing.do?action=quickRedeem' : '/front/financing.do?action=commonRedeem';
+                console.log('Received values of form: ', JSON.stringify(values))
+                const { redeem } = this.props
+                let url = redeemMethod === 1 ? '/front/financing.do?action=quickRedeem' : '/front/financing.do?action=commonRedeem'
                 ajaxPost(url, {
                     prdCode: redeem.states.fundInfo.data.result[0].prdCode,
                     vol: redeemAmt,
                     smsCode: values.smsCode,
                     smsFlowNo: redeem.states.msgCode.data ? redeem.states.msgCode.data.smsFlowNo : ''
                 }, (data) => {
-                    console.log(data);
-                    location.hash = '#/redeem/success/' + redeemAmt;
-                });
+                    console.log(data)
+                    location.hash = '#/redeem/success/' + redeemAmt
+                })
             }
-        });
+        })
     }
 
     methodChange(e) {
-        console.log(e.target.value);
+        console.log(e.target.value)
         this.setState({
             redeemMethod: e.target.value
-        });
+        })
     }
 
     render() {
-        console.log(this.props);
+        console.log(this.props)
 
-        const { redeem } = this.props;
-        const { states } = redeem;
-        const redeemMethod = this.state.redeemMethod;
+        const { redeem } = this.props
+        const { states } = redeem
+        const redeemMethod = this.state.redeemMethod
         return (
             <div className="indentityBox">
                 <div className="container finance-account-finish">
                     <div className="crumbs">
                         <a href="/">首页</a>
-                        <a href="javascript:;">现金盈基金</a>
-                        <a href="javascript:;">赎回</a>
+                        <a href="javascript:">现金盈基金</a>
+                        <a href="javascript:">赎回</a>
                     </div>
                     <Modal
                         title="短信验证"
@@ -202,7 +203,7 @@ class RedeemStart extends React.Component {
                     </div>
                 </div>
             </div>
-        );
+        )
     }
 }
 
@@ -218,4 +219,4 @@ export default connect((state) => { return { redeem: state.redeem } })(
     SubPageWarpper({
         title: '我的理财',
         child: RedeemStart
-    }));
+    }))

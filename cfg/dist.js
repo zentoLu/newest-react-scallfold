@@ -1,6 +1,7 @@
 'use strict';
 const HtmlWebpackPlugin = require('html-webpack-plugin'); //通过 npm 安装
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
+const webpack = require('webpack');
 const path = require('path');
 let config = {
     entry: {
@@ -40,6 +41,9 @@ let config = {
             hash: true,
             template: './src/index.html'
         }),
+    new webpack.DefinePlugin({
+        'process.env.NODE_ENV': '"production"'
+    }),
         new UglifyJSPlugin(),
         new HtmlWebpackPlugin({
             filename: 'financeAccount.html',

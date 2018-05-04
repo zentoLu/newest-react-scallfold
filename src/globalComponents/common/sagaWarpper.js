@@ -104,7 +104,7 @@ const SubHead = (props) => {
                 <div className="navs">
                     { navs.map((it) => {
                         return  (
-                            <div key={it.nav} className={'nav-item inline-block ' + (nav === it.nav ? 'active' : '')}>
+                            <div className={'nav-item inline-block ' + (nav === it.nav ? 'active' : '')}>
                                 <a href={it.link}>{it.cnName}</a>
                             </div>)
                         }) }

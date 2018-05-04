@@ -65,7 +65,7 @@ let config = {
             template: './src/financing/financing.html'
         }),
         new webpack.DefinePlugin({
-            'process.env.NODE_ENV': '"production"'
+            'process.env.NODE_ENV': '"dev"'
         }),
         new webpack.NoEmitOnErrorsPlugin(),
         new webpack.HotModuleReplacementPlugin()

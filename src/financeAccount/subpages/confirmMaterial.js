@@ -1,10 +1,10 @@
 import React from 'react'
-import {Link} from 'react-router-dom'
-import {ajaxPost} from 'request'
+import { Link } from 'react-router-dom'
+import { ajaxPost } from 'request'
 import { connect } from 'react-redux'
-import { Form, Icon, Input, Button, Radio, Checkbox, Cascader, Modal} from 'antd'
+import { Form, Icon, Input, Button, Radio, Checkbox, Cascader, Modal } from 'antd'
 import projectTool from '../../util/projectTool'
-import {validator} from '../../globalComponents/form/valid.js'
+import { validator } from '../../globalComponents/form/valid.js'
 import WrappedSmsForm from 'form/smsForm.js'
 import SubPageWarpper from 'globalComponents/common/SubPageWarpper.js'
 const action = function(values) {
@@ -20,7 +20,7 @@ const RadioGroup = Radio.Group;
 class AccountForm extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { visible: false};
+        this.state = { visible: false };
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
@@ -28,12 +28,13 @@ class AccountForm extends React.Component {
         //const mobile = this.props.sign || '13480704730';
         const mobile = '13480704730';
         ajaxPost('/front/financing.do?action=msgCode', {
-            mobile: mobile, type: '02'
+            mobile: mobile,
+            type: '02'
         }, (data) => {
             console.log(data);
             this.props.dispatch({
                 type: 'STATE',
-                states: {msgCode: data}
+                states: { msgCode: data }
             })
         });
     }
@@ -54,7 +55,7 @@ class AccountForm extends React.Component {
     }
 
     handleOk() {
-        let {account} = this.props;
+        let { account } = this.props;
         this.props.form.validateFields(['smsCode'], (err, values) => {
             if (!err) {
                 //console.log(values);
@@ -70,9 +71,10 @@ class AccountForm extends React.Component {
     }
 
     formatData(d, account) {
-        let data = {}, list = [];
+        let data = {},
+            list = [];
         //把法定代表人改为经办人
-        if(account.states.isLegal) {
+        if (account.states.isLegal) {
             data = {
                 actorName: d.reprName,
                 mobile: d.reprMobile,
@@ -90,7 +92,13 @@ class AccountForm extends React.Component {
         data.idFront = '';
         data.idBack = '';
         data.busCert = '';
-        data.reprIdType = '身份证';
+        data.reprIdType = 1;
+        console.log(data.addressPrefix);
+        data.openCityNo = data.bankCity[1];
+        data.bankNo = data.bankAccName;
+        data.address = data.addressPrefixSelect.map((it) => { return it.label }).join('') + data.address;
+        data.smsCode =
+            console.log(data);
         list.push({
             imgType: '1',
             img: d.legalIdFront
@@ -131,8 +139,8 @@ class AccountForm extends React.Component {
             },
         };
 
-        const {account, dispatch, form} = this.props;
-        const {values, states} = account;
+        const { account, dispatch, form } = this.props;
+        const { values, states } = account;
         const CustomInput = (name, label, rules, placeholder) => {
             const error = isFieldTouched(name) && getFieldError(name);
             return (
@@ -253,7 +261,7 @@ class AccountForm extends React.Component {
                 </Modal>
             </Form>
         );
-  }
+    }
 }
 
 const WrappedAccountForm = Form.create()(AccountForm);
@@ -264,10 +272,10 @@ class ConfirmMaterial extends React.Component {
     }
 
     hideModal(e) {
-      console.log(e);
-      this.setState({
-        visible: false,
-      });
+        console.log(e);
+        this.setState({
+            visible: false,
+        });
     }
 
     render() {
@@ -309,9 +317,11 @@ class ConfirmMaterial extends React.Component {
     }
 }
 
-export default  connect((state) => { return {
+export default connect((state) => {
+    return {
         account: state.account
-    }})( SubPageWarpper({
-        title: '我的理财',
-        child: ConfirmMaterial
-    }));
+    }
+})(SubPageWarpper({
+    title: '我的理财',
+    child: ConfirmMaterial
+}));

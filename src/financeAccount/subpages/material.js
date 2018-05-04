@@ -14,18 +14,28 @@ const action = function(values) {
         values
     }
 }
+let formCreatTimes = 1;
 
 class AdminForm extends React.Component {
     constructor(props) {
         super(props);
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.props.dispatch({ type: 'STATE', states: { adminFormSubmited: false } });
+        //this.props.dispatch({ type: 'STATE', states: { adminFormSubmited: false } });
+    }
+
+    componentDidMount() {
+        if (formCreatTimes === 2) {
+            formCreatTimes = 1;
+            this.props.form.validateFields((err, values) => {});
+        }
     }
 
     handleSubmit(e) {
         e.preventDefault();
         this.props.dispatch({ type: 'STATE', states: { adminFormSubmited: true } });
+
         this.props.form.validateFields((err, values) => {
+            this.props.dispatch(action(values));
             if (!err) {
                 console.log('Received values of form: ', JSON.stringify(values));
 
@@ -42,12 +52,7 @@ class AdminForm extends React.Component {
         const { dispatch, account } = this.props;
         const { states } = account;
         const decorator = this.props.form.getFieldDecorator;
-        let getFieldDecorator = (name, option) => {
-            //option.validateTrigger = states.adminFormSubmited ? 'onChange' : 'onSubmit';
-            option.validateTrigger = 'onSubmit';
-            //console.log(option.validateTrigger);
-            return decorator(name, option);
-        }
+
         const formItemLayout = {
             labelCol: {
                 xs: { span: 24 },
@@ -60,8 +65,14 @@ class AdminForm extends React.Component {
         };
 
 
-        const CustomInput = (name, label, rules, placeholder) => {
-            const error = isFieldTouched(name) && getFieldError(name);
+        let CustomInput = (name, label, rules, placeholder) => {
+            const isTouched = isFieldTouched(name);
+            let getFieldDecorator = (name, option) => {
+                option.validateTrigger = states.adminFormSubmited ? 'onChange' : 'onSubmit';
+                //option.validateTrigger = 'onSubmit';
+                //console.log(option.validateTrigger);
+                return decorator(name, option);
+            }
             return (
                 <FormItem {...formItemLayout} label={label}>
                     {getFieldDecorator(name, {
@@ -117,15 +128,24 @@ class AdminForm extends React.Component {
     }
 }
 
-const WrappedAdminForm = Form.create()(AdminForm);
+let WrappedAdminForm = Form.create()(AdminForm);
 
 class Material extends React.Component {
     constructor(props) {
         super(props)
     }
 
+    componentWillMount() {
+        if (formCreatTimes === 1 && this.props.account.states.adminFormSubmited) {
+            //重新创建form
+            WrappedAdminForm = Form.create()(AdminForm);
+            formCreatTimes = 2;
+        }
+    }
+
     render() {
         console.log(this.props);
+
         return (
             <div className="indentityBox page-finance-account">
                 <div className="container">
@@ -168,7 +188,6 @@ class Material extends React.Component {
         )
     }
 }
-
 
 export default connect((state) => { return { account: state.account } })(
     SubPageWarpper({

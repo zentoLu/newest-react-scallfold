@@ -2,11 +2,11 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { ajaxPost } from 'request'
 import { connect } from 'react-redux'
-import { Form, Icon, Input, Button, Radio, Checkbox, Cascader } from 'antd'
+import { Form, Icon, Input, Button, Radio, Checkbox, Cascader, Select } from 'antd'
 import projectTool from '../../util/projectTool'
 import { validator } from '../../globalComponents/form/valid.js'
 import SubPageWarpper from 'globalComponents/common/SubPageWarpper.js'
-
+const Option = Select.Option;
 const action = function(values) {
     return {
         type: 'ACCOUNT',
@@ -22,6 +22,7 @@ class AccountForm extends React.Component {
         super(props);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.addressValidator = this.addressValidator.bind(this);
+        this.bankCityValidator = this.bankCityValidator.bind(this);
     }
 
     componentDidMount() {
@@ -42,6 +43,43 @@ class AccountForm extends React.Component {
                 }
             })
         });
+        //民生获取省
+        ajaxPost('/front/financing.do?action=getProvinceList', {}, (data) => {
+            console.log(data);
+            let options = [];
+            data.data.data.map((it) => {
+                options.push({
+                    value: it.provinceCode,
+                    label: it.provinceName,
+                    type: it.provinceType,
+                    isLeaf: false
+                });
+            });
+
+            this.props.dispatch({
+                type: 'STATE',
+                states: {
+                    bankCityOptions: options
+                }
+            })
+        });
+        //民生获取银行列表
+        ajaxPost('/front/financing.do?action=getBankList', {}, (data) => {
+            console.log(data);
+            let options = [];
+            data.data.data.map((it) => {
+                options.push({
+                    value: it.bankCode,
+                    label: it.bankName
+                });
+            });
+            this.props.dispatch({
+                type: 'STATE',
+                states: {
+                    bankOptions: options
+                }
+            })
+        });
     }
 
 
@@ -59,15 +97,32 @@ class AccountForm extends React.Component {
         });
     }
 
-    addressValidator(rule, value, callback) {
-        const addressPrefix = this.props.account.values.addressPrefix;
-        if (!addressPrefix || addressPrefix.length === 0) {
+    bankCityValidator(rule, value, callback) {
+        const bankCitySelect = this.props.account.values.bankCitySelect;
+        if (!bankCitySelect || bankCitySelect.length === 0) {
             callback('请选择省');
-        } else if (addressPrefix[0].children && addressPrefix[0].children.length > 0) {
-            if (!addressPrefix[1]) {
+        } else if (bankCitySelect[0].children && bankCitySelect[0].children.length > 0) {
+            if (!bankCitySelect[1]) {
                 callback('请选择市');
-            } else if (addressPrefix[0].children && addressPrefix[1].children.length > 0) {
-                if (!addressPrefix[2]) {
+            } else {
+                callback();
+            }
+
+        } else {
+            callback();
+        }
+
+    }
+
+    addressValidator(rule, value, callback) {
+        const addressPrefixSelect = this.props.account.values.addressPrefixSelect;
+        if (!addressPrefixSelect || addressPrefixSelect.length === 0) {
+            callback('请选择省');
+        } else if (addressPrefixSelect[0].children && addressPrefixSelect[0].children.length > 0) {
+            if (!addressPrefixSelect[1]) {
+                callback('请选择市');
+            } else if (addressPrefixSelect[0].children && addressPrefixSelect[1].children.length > 0) {
+                if (!addressPrefixSelect[2]) {
                     callback('请选择区');
                 } else {
                     callback();
@@ -82,10 +137,17 @@ class AccountForm extends React.Component {
 
     }
 
+    onChangeCity(value, selectedOptions) {
+        console.log(value, selectedOptions);
+        this.props.dispatch(action({
+            bankCitySelect: selectedOptions
+        }));
+    }
+
     onChange(value, selectedOptions) {
         console.log(value, selectedOptions);
         this.props.dispatch(action({
-            addressPrefix: selectedOptions
+            addressPrefixSelect: selectedOptions
         }));
     }
 
@@ -111,6 +173,37 @@ class AccountForm extends React.Component {
                     type: 'STATE',
                     states: {
                         addressOptions: this.props.account.states.addressOptions
+                    }
+                })
+            });
+        }
+
+    }
+
+    loadBankCity(selectedOptions) {
+        const targetOption = selectedOptions[selectedOptions.length - 1];
+
+        console.log(targetOption);
+        if (targetOption.type) {
+            targetOption.loading = true;
+            ajaxPost('/front/financing.do?action=getCityList', { provinceCode: targetOption.value }, (data) => {
+                console.log(data);
+                targetOption.loading = false;
+                let children = [];
+                data.data.data.map((it) => {
+                    children.push({
+                        value: it.cityCode,
+                        label: it.cityName,
+                        isLeaf: false
+                    });
+                });
+                if (children.length > 0) {
+                    targetOption.children = children
+                }
+                this.props.dispatch({
+                    type: 'STATE',
+                    states: {
+                        bankCityOptions: this.props.account.states.bankCityOptions
                     }
                 })
             });
@@ -154,7 +247,7 @@ class AccountForm extends React.Component {
         const isMixedCtf = form.getFieldValue('isMixedCtf') || 1;
 
         const addressOptions = states.addressOptions || [];
-
+        const bankCityOptions = states.bankCityOptions || [];
         return (
             <Form onSubmit={this.handleSubmit} className="account-form">
                 <div className="cust form-module">
@@ -196,7 +289,29 @@ class AccountForm extends React.Component {
                         </div>
                     </div>
                     { CustomInput('bankAcc', '对公账号', [{ required: true, message: '请输入正确的银行卡号!' }], '请输入企业银行卡号') }
-                    { CustomInput('bankAccName', '开户银行', [{ required: true, message: '请输入正确的银行卡号!' }], '请输入企业银行卡号') }
+                    <FormItem className="item-bankNo" {...formItemLayout} label="开户银行">
+                        {getFieldDecorator('bankAccName', {
+                            rules: [{rule:'required', validator: validator, message: '请选择开户银行' }],
+                            initialValue: values.bankAccNo
+                        })(
+                        <Select  placeholder="请选择开户银行" >
+                        {states.bankOptions && states.bankOptions.map((item, i) => <Option key={i} value={item.value}>{item.label}</Option>)}
+                        </Select>
+                        )}
+                    </FormItem>
+                    <FormItem  {...formItemLayout} label="银行开户城市">
+                        {getFieldDecorator('bankCity', {
+                            rules: [{rule:'required', validator: this.bankCityValidator, required: true, message: '' }]
+                        })(
+                            <Cascader
+                                options={bankCityOptions}
+                                loadData={(s)=>{this.loadBankCity(s)}}
+                                onChange={(v,s)=>{this.onChangeCity(v,s)}}
+                                changeOnSelect
+                                placeholder="请选择开户城市"
+                              />
+                        )}
+                    </FormItem>
                     { CustomInput('officePhone', '办公电话', [{rule:'tel;required', validator: validator, required: true, message: '请输入正确的办公电话!' }], '请输入办公电话') }
                     <FormItem  className="address-prefix-item" {...formItemLayout} label="通讯地址">
                         {getFieldDecorator('addressPrefix', {

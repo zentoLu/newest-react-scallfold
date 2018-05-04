@@ -6,7 +6,7 @@ const serializeToUrl = (data) => Object.keys(data).map(function(key) {
     return encodeURIComponent(key) + '=' + encodeURIComponent(data[key])
 }).join('&');
 
-
+console.log(process.env.NODE_ENV);
 const resetToken = () => {
     var XTOKEN = 'csrftoken',
         token = Tool.cookie.get(XTOKEN);
@@ -44,7 +44,7 @@ export const ajaxPromise = (url, data, success, error) => {
 export const ajax = (opt) => {
     var defaultOption = {
         method: 'post',
-        timeout: 12 * 1000
+        timeout: 120 * 1000
     };
 
     var option = Object.assign(defaultOption, opt);
@@ -57,6 +57,10 @@ export const ajax = (opt) => {
             'X-CSRF-Token': md5(token)
         }
     }
+
+    /*if (process.env.NODE_ENV === 'production') {
+        option.headers['Content-type'] = 'application/x-www-form-urlencoded'
+    }*/
 
     return new Promise(function(resolve, reject) {
         axios(option).then(function(response) {
