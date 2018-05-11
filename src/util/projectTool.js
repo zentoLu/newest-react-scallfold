@@ -12,7 +12,7 @@ const projectTool = {
      * @param  {[type]} action [description]
      * @return {[type]}    [description]
      */
-    loadImgToBase64(e, dispatch, action, callback) {
+    loadImgToBase64(e, callback) {
         var id = e.target.id;
         var files = document.getElementById(id).files;
         var file = files[0];
@@ -33,11 +33,7 @@ const projectTool = {
         reader.readAsDataURL(file);
         reader.onload = (event) => {
             if (typeof callback === 'function') {
-                callback(id, event.target.result);
-            } else {
-                dispatch(action({
-                    [id]: event.target.result
-                }));
+                callback(id, event.target.result, file);
             }
         }
     },
@@ -52,13 +48,10 @@ const projectTool = {
         },
         fileSizeLimit: 10 * 1024 * 1024 // 文件大小限制
     },
-    loadImgToCompressedBase64(e, dispatch, action) {
-        this.loadImgToBase64(e, dispatch, action, (id, file) => {
+    loadImgToCompressedBase64(e, callback) {
+        this.loadImgToBase64(e, (id, file, originFile) => {
             compressImg(file).then((data) => {
-                console.log(data);
-                dispatch(action({
-                    [id]: data
-                }));
+                callback(id, file, originFile);
             }).catch((err) => {
                 console.log(err);
             });

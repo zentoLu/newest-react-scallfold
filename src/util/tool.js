@@ -147,7 +147,11 @@ const Tool = {
         str = str ? String(str) : '';
         return str.replace(/^(\d{3})\d{4}(\d{4})$/, '$1****$2').replace(/^(.{3})[^@]*(@.+)$/, '$1****$2');
     },
-
+    //身份证号打码
+    formatId: function(str) {
+        str = str ? String(str) : '';
+        return str.replace(/^(\d{6})\d{8}(\d{4})$/, '$1********$2');
+    },
     storage: {
         set: function(key, value) {
             key = key.replace(/\//g, '_');

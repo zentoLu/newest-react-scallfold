@@ -20,8 +20,18 @@ import zh_CN from 'antd/lib/locale-provider/zh_CN';
 import '../util/mock1.js';
 import "babel-polyfill"
 import rootSaga from './sagas'
+import Tool from 'tool'
 
-var store = configureStore({}, rootReducer, rootSaga);
+var cache = Tool.storage.get('store');
+var initialState = {};
+/*if (cache) {
+    try {
+        initialState = JSON.parse(cache);
+    } catch (err) {
+        console.log(err);
+    }
+}*/
+var store = configureStore(initialState, rootReducer, rootSaga);
 
 const customHistory = createHashHistory();
 
@@ -41,5 +51,16 @@ const RouterContainer = () => (
 );
 
 const Root = () => <Provider store={store}><RouterContainer /></Provider>
+
+window.onbeforeunload = function(event) {
+    var state = store.getState();
+    var reg = /\"base64\"\:\"(.*?)\"/g;
+    var lastStore = JSON.stringify(state).replace(reg, '"base64":""');
+    //Tool.storage.set('store', lastStore);
+    console.log(lastStore.length)
+    //Tool.cookie.remove('store');
+    console.log(Tool.storage.get('store'))
+
+}
 
 export default Root

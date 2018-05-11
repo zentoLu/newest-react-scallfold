@@ -39,6 +39,8 @@ const compressImg = (file, option) => {
         img.onload = function() {
             w = this.width;
             h = this.height;
+            w = w > opt.compress.width ? opt.compress.width : w;
+            h = h > opt.compress.height ? opt.compress.height : h;
             //console.log(w, h);
             cvs.width = w;
             cvs.height = h;
@@ -54,14 +56,15 @@ const compressImg = (file, option) => {
                 len = dataURL.length;
                 if (quality > 0.2) {
                     quality -= 0.05;
-                } else if (quality > 0.12) {
-                    quality -= 0.02;
                 } else if (quality > 0.05) {
+                    quality -= 0.02;
+                } else if (quality <= 0.05) {
                     quality -= 0.01;
                 }
 
                 //console.log(dataURL, dataURL.length, quality);
             }
+            console.log('压缩完成', dataURL.length, quality)
             resolve(dataURL);
         }
     });

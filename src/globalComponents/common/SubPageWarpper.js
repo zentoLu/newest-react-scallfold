@@ -2,16 +2,17 @@ import React from 'react';
 
 //通用的action
 const formAction = function(values) {
+    console.log(values);
     return {
         type: 'FORM',
         values
     }
 }
 
-const stateAction = function(values) {
+const stateAction = function(states) {
     return {
         type: 'STATE',
-        values
+        states
     }
 }
 
@@ -52,10 +53,11 @@ function SubPageWarpper(option) {
                     values.eventType = e.type;
                     values.id = e.target.id;
                 }
+                console.log(1);
                 return props.dispatch(formAction(values));
             }
             const dispatchState = (state) => {
-                return props.dispatch(formAction(state));
+                return props.dispatch(stateAction(state));
             }
             return (
                 <div>

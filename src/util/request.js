@@ -3,10 +3,19 @@ import axios from 'axios'
 import Tool from './tool.js'
 import { message, Modal } from 'antd';
 const serializeToUrl = (data) => Object.keys(data).map(function(key) {
-    return encodeURIComponent(key) + '=' + encodeURIComponent(data[key])
+    var value = data[key];
+    if (typeof value === 'object' && value !== null) {
+        value = JSON.stringify(value);
+        value = value.replace(/\+/g, '%2B'); //处理加号
+        console.log(value);
+    } else {
+        value = encodeURI(value)
+    }
+    return key + '=' + value
 }).join('&');
 
 console.log(process.env.NODE_ENV);
+const env = process.env.NODE_ENV;
 const resetToken = () => {
     var XTOKEN = 'csrftoken',
         token = Tool.cookie.get(XTOKEN);
@@ -56,11 +65,13 @@ export const ajax = (opt) => {
         option.headers = {
             'X-CSRF-Token': md5(token)
         }
+
     }
 
-    /*if (process.env.NODE_ENV === 'production') {
-        option.headers['Content-type'] = 'application/x-www-form-urlencoded'
-    }*/
+    //if (env === 'production') {
+    option.headers['Content-type'] = 'application/x-www-form-urlencoded'
+    option.data = serializeToUrl(option.data);
+    //}
 
     return new Promise(function(resolve, reject) {
         axios(option).then(function(response) {

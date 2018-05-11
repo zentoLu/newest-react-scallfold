@@ -6,7 +6,7 @@ import Tool from 'tool'
 import { message, Form, Input, Modal, Button, Checkbox, Popover, Radio } from 'antd'
 import SubPageWarpper from 'globalComponents/common/SubPageWarpper.js'
 import WrappedSmsForm from 'form/smsForm.js'
-
+import { prdCode, fundAcc } from 'package'
 const FormItem = Form.Item
 const RadioGroup = Radio.Group
 class RedeemStart extends React.Component {
@@ -28,8 +28,22 @@ class RedeemStart extends React.Component {
                     custInfo: data
                 }
             })
+            //基金持有份额接口
+            ajaxPost('/front/financing.do?action=queryFundPortion', { prdCode: prdCode, fundAcc: fundAcc }, (data) => {
+                console.log(data)
+                this.props.dispatch({
+                    type: 'STATE',
+                    states: {
+                        fundPortion: data
+                    }
+                })
+            })
         })
-        ajaxPost('/front/financing.do?action=queryFundInfo', {}, (data) => {
+        ajaxPost('/front/financing.do?action=queryFundInfo', {
+            "prdCode": prdCode,
+            "currentPage": "1",
+            "pageSize": "5"
+        }, (data) => {
             console.log(data)
             this.props.dispatch({
                 type: 'STATE',
@@ -38,16 +52,7 @@ class RedeemStart extends React.Component {
                 }
             })
         })
-        //基金持有份额接口
-        ajaxPost('/front/financing.do?action=queryFundPortion', {}, (data) => {
-            console.log(data)
-            this.props.dispatch({
-                type: 'STATE',
-                states: {
-                    fundPortion: data
-                }
-            })
-        })
+
     }
 
     getCode() {

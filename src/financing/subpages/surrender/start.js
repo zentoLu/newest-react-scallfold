@@ -6,6 +6,7 @@ import { message, Form, Input, Modal, Button, Checkbox } from 'antd';
 import SubPageWarpper from 'globalComponents/common/SubPageWarpper.js'
 import WrappedSmsForm from 'form/smsForm.js'
 import Tool from 'tool'
+import { prdCode } from 'package'
 const FormItem = Form.Item;
 class SurrenderStart extends React.Component {
     constructor(props) {

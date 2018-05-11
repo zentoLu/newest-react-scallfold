@@ -5,8 +5,9 @@ const webpack = require('webpack');
 
 const args = require('minimist')(process.argv.slice(2));
 let env = args.env || 'dev';
+let ip = args.define || defaultSettings.ip;
 let envConfig = require(path.join(__dirname, 'cfg/' + env));
-
+console.log(args);
 module.exports = {
     entry: envConfig.entry,
     mode: env !== 'dist' ? 'development' : 'production',
@@ -31,7 +32,7 @@ module.exports = {
             context: ["/user/", "/front/", "/cust/"],
             //target: { host: defaultSettings.ip || '172.20.10.105', protocol: 'http:', port: 80 },
             //target: { host: '172.20.10.105', protocol: 'http:', port: 80 },
-            target: { host: '172.20.3.140', protocol: 'http:', port: 80 },
+            target: { host: ip, protocol: 'http:', port: 80 },
             secure: false,
             ingorePath: false,
             changeOrigin: true,
@@ -44,10 +45,11 @@ module.exports = {
                         var value = body[key];
                         if (typeof value === 'object' && value !== null) {
                             value = JSON.stringify(value);
+                            value = value.replace(/\+/g, '%2B');
                         } else {
-                            value = encodeURI(body[key])
+                            value = body[key]
                         }
-                        return encodeURI(key) + '=' + value
+                        return key + '=' + value
                     }).join('&');
                     console.log(body);
                     // Update header
@@ -86,7 +88,7 @@ module.exports = {
             tool: `${defaultSettings.srcPath}/util/tool`,
             projectTool: `${defaultSettings.srcPath}/util/projectTool`,
             form: `${defaultSettings.srcPath}/globalComponents/form`,
-            package: `${defaultSettings.srcPath}/globalComponents/package`,
+            package: `${defaultSettings.srcPath}/globalComponents/common/package`,
             'react/lib/ReactMount': 'react-dom/lib/ReactMount'
         }
     },

@@ -7,4 +7,7 @@ import { connect } from 'react-redux'
 import { ajaxPost } from 'request'
 import Tool from 'tool'
 
-export { React, Link, connect, ajaxPost, Tool }
+const prdCode = '001240';
+const fundAcc = '9595000032396007';
+
+export { React, Link, connect, ajaxPost, Tool, prdCode, fundAcc }

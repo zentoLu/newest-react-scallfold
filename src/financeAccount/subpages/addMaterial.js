@@ -23,44 +23,91 @@ class AccountForm extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.addressValidator = this.addressValidator.bind(this);
         this.bankCityValidator = this.bankCityValidator.bind(this);
+        this.loadImg = this.loadImg.bind(this);
+    }
+
+    loadImg(id, file, originFile) {
+        this.props.dispatchForm({
+            [id]: {
+                base64: file,
+                name: originFile.name
+            }
+        })
+        console.log(file.length);
     }
 
     componentDidMount() {
+        //this.props.dispatchState({ adminFormSubmited: false });
+        console.log(this.props.account.states.addFormSubmited);
+        const values = this.props.account.values;
+        if (this.props.account.states.addFormSubmited) {
+            this.props.form.validateFields((err, values) => {});
+        }
         ajaxPost('/front/index.do?action=findProvice', {}, (data) => {
             console.log(data);
-            let options = [];
+            let options = [],
+                selectedOptions = [],
+                addressPrefix = values.addressPrefix;
+            //debugger
             data.data.list.map((it) => {
-                options.push({
+                let pro = {
                     value: it.code,
                     label: it.name,
                     isLeaf: false
-                });
-            });
-            this.props.dispatch({
-                type: 'STATE',
-                states: {
-                    addressOptions: options
+                };
+                //debugger
+                options.push(pro);
+                if (addressPrefix && addressPrefix.length > 1) {
+
+                    if (it.code === addressPrefix[0]) {
+                        selectedOptions.push(pro);
+                    }
                 }
+            });
+            if (addressPrefix && addressPrefix.length > 1) {
+                let citySelectedOptions = [];
+                this.loadData(selectedOptions, (children) => {
+                    for (var k = 0; k < children.length; k++) {
+                        if (addressPrefix[1] === children[k].value) {
+                            citySelectedOptions.push(children[k])
+                            break;
+                        }
+                    }
+                    this.loadData(citySelectedOptions);
+                });
+            }
+            //debugger
+            this.props.dispatchState({
+                addressOptions: options
             })
         });
         //民生获取省
         ajaxPost('/front/financing.do?action=getProvinceList', {}, (data) => {
             console.log(data);
-            let options = [];
+            let options = [],
+                selectedOptions = [],
+                bankCity = values.bankCity;
             data.data.data.map((it) => {
-                options.push({
+                let pro = {
                     value: it.provinceCode,
                     label: it.provinceName,
                     type: it.provinceType,
                     isLeaf: false
-                });
+                }
+                options.push(pro);
+                if (bankCity && bankCity.length === 2) {
+                    if (it.provinceCode === bankCity[0]) {
+                        selectedOptions.push(pro);
+                    }
+                }
             });
 
-            this.props.dispatch({
-                type: 'STATE',
-                states: {
-                    bankCityOptions: options
-                }
+            if (bankCity && bankCity.length === 2) {
+                this.loadBankCity(selectedOptions);
+            }
+
+            this.props.dispatchState({
+                bankCityOptions: options
             })
         });
         //民生获取银行列表
@@ -73,11 +120,8 @@ class AccountForm extends React.Component {
                     label: it.bankName
                 });
             });
-            this.props.dispatch({
-                type: 'STATE',
-                states: {
-                    bankOptions: options
-                }
+            this.props.dispatchState({
+                bankOptions: options
             })
         });
     }
@@ -85,6 +129,7 @@ class AccountForm extends React.Component {
 
     handleSubmit(e) {
         e.preventDefault();
+        this.props.dispatchState({ addFormSubmited: true });
         this.props.form.validateFieldsAndScroll((err, values) => {
             if (!err) {
                 console.log('Received values of form: ', JSON.stringify(values));
@@ -98,39 +143,36 @@ class AccountForm extends React.Component {
     }
 
     bankCityValidator(rule, value, callback) {
-        const bankCitySelect = this.props.account.values.bankCitySelect;
-        if (!bankCitySelect || bankCitySelect.length === 0) {
+        console.log(value);
+        console.log(this.refs);
+        if (!value || value.length === 0) {
             callback('请选择省');
-        } else if (bankCitySelect[0].children && bankCitySelect[0].children.length > 0) {
-            if (!bankCitySelect[1]) {
-                callback('请选择市');
-            } else {
-                callback();
-            }
-
-        } else {
+        } else if (value.length === 1) {
+            callback('请选择市');
+        } else if (value.length === 2) {
             callback();
+        } else {
+            callback('未知错误');
         }
 
     }
 
     addressValidator(rule, value, callback) {
-        const addressPrefixSelect = this.props.account.values.addressPrefixSelect;
-        if (!addressPrefixSelect || addressPrefixSelect.length === 0) {
-            callback('请选择省');
-        } else if (addressPrefixSelect[0].children && addressPrefixSelect[0].children.length > 0) {
-            if (!addressPrefixSelect[1]) {
+        //const addressPrefixSelect = this.props.account.values.addressPrefixSelect;
+        if (value && value[0] !== '820000' && value[0] !== '710000' && value[0] !== '810000') {
+            if (value.length === 0) {
+                callback('请选择省');
+            } else if (value.length === 1) {
                 callback('请选择市');
-            } else if (addressPrefixSelect[0].children && addressPrefixSelect[1].children.length > 0) {
-                if (!addressPrefixSelect[2]) {
-                    callback('请选择区');
-                } else {
-                    callback();
-                }
-            } else {
+            } else if (value.length === 2) {
+                callback('请选择区/县');
+            } else if (value.length === 3) {
                 callback();
+            } else {
+                callback('未知错误');
             }
-
+        } else if (!value) {
+            callback('请选择省');
         } else {
             callback();
         }
@@ -151,7 +193,7 @@ class AccountForm extends React.Component {
         }));
     }
 
-    loadData(selectedOptions) {
+    loadData(selectedOptions, callback) {
         const targetOption = selectedOptions[selectedOptions.length - 1];
         if (/00$/.test(targetOption.value)) {
             targetOption.loading = true;
@@ -159,21 +201,31 @@ class AccountForm extends React.Component {
                 console.log(data);
                 targetOption.loading = false;
                 let children = [];
+                let isLeaf = false;
+                if (/0000$/.test(targetOption.value)) {
+                    isLeaf = false;
+                } else if (/00$/.test(targetOption.value)) {
+                    isLeaf = true;
+                }
+
                 data.data.list.map((it) => {
                     children.push({
                         value: it.code,
                         label: it.name,
-                        isLeaf: false
+                        isLeaf: isLeaf
                     });
                 });
+
                 if (children.length > 0) {
                     targetOption.children = children
+                } else if (children.length === 0) {
+                    targetOption.isLeaf = true;
                 }
-                this.props.dispatch({
-                    type: 'STATE',
-                    states: {
-                        addressOptions: this.props.account.states.addressOptions
-                    }
+                if (typeof callback === 'function') {
+                    callback(children);
+                }
+                this.props.dispatchState({
+                    addressOptions: this.props.account.states.addressOptions
                 })
             });
         }
@@ -181,9 +233,10 @@ class AccountForm extends React.Component {
     }
 
     loadBankCity(selectedOptions) {
+        console.log(selectedOptions);
         const targetOption = selectedOptions[selectedOptions.length - 1];
 
-        console.log(targetOption);
+
         if (targetOption.type) {
             targetOption.loading = true;
             ajaxPost('/front/financing.do?action=getCityList', { provinceCode: targetOption.value }, (data) => {
@@ -193,18 +246,14 @@ class AccountForm extends React.Component {
                 data.data.data.map((it) => {
                     children.push({
                         value: it.cityCode,
-                        label: it.cityName,
-                        isLeaf: false
+                        label: it.cityName
                     });
                 });
                 if (children.length > 0) {
                     targetOption.children = children
                 }
-                this.props.dispatch({
-                    type: 'STATE',
-                    states: {
-                        bankCityOptions: this.props.account.states.bankCityOptions
-                    }
+                this.props.dispatchState({
+                    bankCityOptions: this.props.account.states.bankCityOptions
                 })
             });
         }
@@ -215,7 +264,7 @@ class AccountForm extends React.Component {
         const { getFieldsError, getFieldError, isFieldTouched } = this.props.form;
         const decorator = this.props.form.getFieldDecorator;
         const getFieldDecorator = (name, option) => {
-            option.validateTrigger = 'onSubmit';
+            option.validateTrigger = states.addFormSubmited ? 'onChange' : 'onSubmit';
             return decorator(name, option);
         }
         const formItemLayout = {
@@ -232,7 +281,6 @@ class AccountForm extends React.Component {
         const { account, dispatch, form } = this.props;
         const { values, states } = account;
         const CustomInput = (name, label, rules, placeholder) => {
-            const error = isFieldTouched(name) && getFieldError(name);
             return (
                 <FormItem {...formItemLayout} label={label}>
                     {getFieldDecorator(name, {
@@ -244,10 +292,12 @@ class AccountForm extends React.Component {
                 </FormItem>
             )
         }
-        const isMixedCtf = form.getFieldValue('isMixedCtf') || 1;
+        //const isMixedCtf = form.getFieldValue('isMixedCtf') || 1;
 
         const addressOptions = states.addressOptions || [];
         const bankCityOptions = states.bankCityOptions || [];
+        //console.log(bankCityOptions)
+        //console.log(addressOptions)
         return (
             <Form onSubmit={this.handleSubmit} className="account-form">
                 <div className="cust form-module">
@@ -277,8 +327,8 @@ class AccountForm extends React.Component {
                         <div className="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
                             <div className="ant-form-item-control clearfix">
                                 <div className="business-cret fl  img-loader-box">
-                                    <input type="file" id="busCert"  onChange={(e) => {projectTool.loadImgToCompressedBase64(e, dispatch, action)}}  name="img" accept="image/*"  />
-                                    {account.values.busCert && <img src={account.values.busCert}  />}
+                                    <input type="file" id="busCert"  onChange={(e) => {projectTool.loadImgToCompressedBase64(e, this.loadImg)}}  name="img" accept="image/*"  />
+                                    {account.values.busCert && <img src={account.values.busCert.base64}  />}
                                 </div>
                                 {/*<div className="org-cert fr  img-loader-box">
                                     <input type="file" id="orgCert"  onChange={(e) => {projectTool.loadImgToBase64(e, dispatch, action)}}  name="img" accept="image/*"  />
@@ -290,17 +340,18 @@ class AccountForm extends React.Component {
                     </div>
                     { CustomInput('bankAcc', '对公账号', [{ required: true, message: '请输入正确的银行卡号!' }], '请输入企业银行卡号') }
                     <FormItem className="item-bankNo" {...formItemLayout} label="开户银行">
-                        {getFieldDecorator('bankAccName', {
-                            rules: [{rule:'required', validator: validator, message: '请选择开户银行' }],
-                            initialValue: values.bankAccNo
+                        {getFieldDecorator('bankNo', {
+                            rules: [{ rule: 'required', required: true, validator: validator, message: '请选择开户银行' }],
+                            initialValue: values.bankNo
                         })(
                         <Select  placeholder="请选择开户银行" >
                         {states.bankOptions && states.bankOptions.map((item, i) => <Option key={i} value={item.value}>{item.label}</Option>)}
                         </Select>
                         )}
                     </FormItem>
-                    <FormItem  {...formItemLayout} label="银行开户城市">
-                        {getFieldDecorator('bankCity', {
+                    <FormItem ref="bankCity"  {...formItemLayout} label="银行开户城市">
+                        { getFieldDecorator('bankCity', {
+                            initialValue: values.bankCity,
                             rules: [{rule:'required', validator: this.bankCityValidator, required: true, message: '' }]
                         })(
                             <Cascader
@@ -315,6 +366,7 @@ class AccountForm extends React.Component {
                     { CustomInput('officePhone', '办公电话', [{rule:'tel;required', validator: validator, required: true, message: '请输入正确的办公电话!' }], '请输入办公电话') }
                     <FormItem  className="address-prefix-item" {...formItemLayout} label="通讯地址">
                         {getFieldDecorator('addressPrefix', {
+                            initialValue: values.addressPrefix,
                             rules: [{rule:'required', validator: this.addressValidator, required: true, message: '' }]
                         })(
                             <Cascader
@@ -327,9 +379,9 @@ class AccountForm extends React.Component {
                         )}
                     </FormItem>
                     <FormItem className="address-detail-item" {...formItemLayout} label=" ">
-                        {getFieldDecorator('address', {
+                        {getFieldDecorator('addressDetail', {
                             rules: [{rule:'required', validator: validator, message: '请输入详细通讯地址' }],
-                            initialValue: values.address
+                            initialValue: values.addressDetail
                         })(
                             <Input className="address-detail"  placeholder="请输入详细通讯地址" />
                         )}
@@ -350,19 +402,19 @@ class AccountForm extends React.Component {
                         <div className="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
                             <div className="ant-form-item-control clearfix">
                                 <div className="id-front fl  img-loader-box">
-                                    <input type="file" id="legalIdFront"  onChange={(e) => {projectTool.loadImgToCompressedBase64(e, dispatch, action)}}  name="img" accept="image/*"  />
-                                    {account.values.legalIdFront && <img src={account.values.legalIdFront}  />}
+                                    <input type="file" id="legalIdFront"  onChange={(e) => {projectTool.loadImgToCompressedBase64(e, this.loadImg)}}  name="img" accept="image/*"  />
+                                    {account.values.legalIdFront && <img src={account.values.legalIdFront.base64}  />}
                                 </div>
                                 <div className="id-back fr  img-loader-box">
-                                    <input type="file" id="legalIdBack"  onChange={(e) => {projectTool.loadImgToCompressedBase64(e, dispatch, action)}}  name="img" accept="image/*"  />
-                                    {account.values.legalIdBack && <img src={account.values.legalIdBack}  />}
+                                    <input type="file" id="legalIdBack"  onChange={(e) => {projectTool.loadImgToCompressedBase64(e, this.loadImg)}}  name="img" accept="image/*"  />
+                                    {account.values.legalIdBack && <img src={account.values.legalIdBack.base64}  />}
                                 </div>
                                 <div className="id-notice">图片格式：支持jpg、gif、bmp、png格式</div>
                             </div>
                         </div>
                     </div>
                     <FormItem  className="protocol-item">
-                        {getFieldDecorator('smsCode', {
+                        {getFieldDecorator('protoCol', {
                             rules: [{ required: true, message: '请阅读并同意协议!' }],
                         })(
                             <Checkbox>我已阅读并同意遵守<a href="#">《金蝶互联网金融服务协议》</a></Checkbox>
@@ -378,11 +430,19 @@ class AccountForm extends React.Component {
     }
 }
 
-const WrappedAccountForm = Form.create()(AccountForm);
+let WrappedAccountForm = Form.create()(AccountForm)
 
 class AddMaterial extends React.Component {
     constructor(props) {
         super(props)
+    }
+
+    componentWillUpdate(props) {
+        if (Boolean(this.props.account.states.addFormSubmited) === false && props.account.states.addFormSubmited === true) {
+            //重新创建form
+            //debugger
+            WrappedAccountForm = Form.create()(AccountForm)
+        }
     }
 
     render() {

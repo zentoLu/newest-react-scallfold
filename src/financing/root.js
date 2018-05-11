@@ -27,7 +27,7 @@ import Index from './subpages/index/index.js';
 import rootReducer from './reducers';
 import { LocaleProvider } from 'antd';
 import zh_CN from 'antd/lib/locale-provider/zh_CN';
-import '../util/mock.js';
+//import '../util/mock.js';
 console.log({ rootSaga });
 var store = configureStore({}, rootReducer, rootSaga);
 const customHistory = createHashHistory();

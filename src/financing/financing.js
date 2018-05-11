@@ -21,6 +21,8 @@ if (module.hot) {
     })
 }
 
+
+
 function render(RootElement) {
     ReactDOM.render(
         <AppContainer>

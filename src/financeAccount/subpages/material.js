@@ -8,38 +8,38 @@ import { validator } from '../../globalComponents/form/valid.js'
 import SubPageWarpper from 'globalComponents/common/SubPageWarpper.js'
 const FormItem = Form.Item;
 
-const action = function(values) {
-    return {
-        type: 'ACCOUNT',
-        values
-    }
-}
-let formCreatTimes = 1;
-
 class AdminForm extends React.Component {
     constructor(props) {
         super(props);
         this.handleSubmit = this.handleSubmit.bind(this);
-        //this.props.dispatch({ type: 'STATE', states: { adminFormSubmited: false } });
+        this.loadImg = this.loadImg.bind(this);
     }
 
     componentDidMount() {
-        if (formCreatTimes === 2) {
-            formCreatTimes = 1;
+        //this.props.dispatchState({ adminFormSubmited: false });
+        if (this.props.account.states.adminFormSubmited) {
             this.props.form.validateFields((err, values) => {});
         }
+
+    }
+
+    loadImg(id, file, originFile) {
+        this.props.dispatchForm({
+            [id]: {
+                base64: file,
+                name: originFile.name
+            }
+        })
     }
 
     handleSubmit(e) {
         e.preventDefault();
-        this.props.dispatch({ type: 'STATE', states: { adminFormSubmited: true } });
-
+        this.props.dispatchState({ adminFormSubmited: true });
         this.props.form.validateFields((err, values) => {
-            this.props.dispatch(action(values));
+            this.props.dispatchForm(values);
             if (!err) {
                 console.log('Received values of form: ', JSON.stringify(values));
-
-                this.props.dispatch(action(values));
+                this.props.dispatchForm(values);
                 //校验图片
 
                 location.hash = '#/addMaterial';
@@ -91,14 +91,6 @@ class AdminForm extends React.Component {
             <Form onSubmit={this.handleSubmit} className="admin-form">
             { CustomInput('actorName', '管理员姓名', [{ required: true, pattern: /^[\u0391-\uFFE5]+$/, message: '请输入正确的姓名!' }], '请输入真实姓名') }
             { CustomInput('mobile', '手机号码', [{ required: true, pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号码!' }], '请输入手机号码') }
-            {/*<FormItem {...formItemLayout} label="短信验证码">
-                {getFieldDecorator('smsCode', {
-                    rules: [{ required: true, message: '请输入正确的短信验证码!' }],
-                })(
-                    <Input  placeholder="请输入短信验证码" />
-                )}
-                <a className="btn-getcode" onClick={() => {this.getCode()}}>发送验证码</a>
-            </FormItem>*/}
             { CustomInput('actorIdCode', '身份证号', [{ rule: 'idcard;required',required: true, message: '请输入正确的身份证号!' ,validator: validator }], '请输入身份证号') }
             <div className="ant-row ant-form-item form-item-id">
                 <div className="ant-form-item-label ant-col-xs-24 ant-col-sm-8">
@@ -108,12 +100,12 @@ class AdminForm extends React.Component {
                 <div className="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
                     <div className="ant-form-item-control clearfix">
                         <div className="id-front fl img-loader-box">
-                            <input type="file" id="idFront"  onChange={(e) => {projectTool.loadImgToCompressedBase64(e, dispatch, action)}}  name="img" accept="image/*"  />
-                            {account.values.idFront && <img src={account.values.idFront}  />}
+                            <input type="file" id="idFront"  onChange={(e) => {projectTool.loadImgToCompressedBase64(e, this.loadImg)}}  name="img" accept="image/*"  />
+                            {account.values.idFront && <img src={account.values.idFront.base64}  />}
                         </div>
                         <div className="id-back fr img-loader-box">
-                            <input type="file" id="idBack"  onChange={(e) => {projectTool.loadImgToCompressedBase64(e, dispatch, action)}}  name="img" accept="image/*"  />
-                            {account.values.idBack && <img src={account.values.idBack}  />}
+                            <input type="file" id="idBack"  onChange={(e) => {projectTool.loadImgToCompressedBase64(e, this.loadImg)}}  name="img" accept="image/*"  />
+                            {account.values.idBack && <img src={account.values.idBack.base64}  />}
                         </div>
                         <div className="id-notice">图片格式：支持jpg、gif、bmp、png格式</div>
                     </div>
@@ -135,11 +127,10 @@ class Material extends React.Component {
         super(props)
     }
 
-    componentWillMount() {
-        if (formCreatTimes === 1 && this.props.account.states.adminFormSubmited) {
+    componentWillUpdate(props) {
+        if (Boolean(this.props.account.states.adminFormSubmited) === false && props.account.states.adminFormSubmited === true) {
             //重新创建form
             WrappedAdminForm = Form.create()(AdminForm);
-            formCreatTimes = 2;
         }
     }
 

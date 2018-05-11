@@ -1,12 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { ajaxPromise } from 'request';
+import { ajaxPromise, ajaxPost } from 'request';
 import { message, Form, Input, Modal, Button, Checkbox } from 'antd';
 import SubPageWarpper from 'globalComponents/common/SubPageWarpper.js'
 import WrappedSmsForm from 'form/smsForm.js'
 import Tool from 'tool'
 const FormItem = Form.Item;
+import { prdCode } from 'package'
 
 /*function runAsync1() {
     var p = new Promise(function(resolve, reject) {
@@ -18,6 +19,28 @@ const FormItem = Form.Item;
     });
     return p;
 }*/
+
+//Post方式提交表单
+function PostSubmit(url, params) {
+    var postUrl = url; //提交地址
+    var postData = params; //第一个数据
+    var ExportForm = document.createElement("FORM");
+    document.body.appendChild(ExportForm);
+    ExportForm.method = "POST";
+    var elements = {};
+    for (var key in params) {
+        elements[key] = document.createElement("input");
+        elements[key].setAttribute("name", key);
+        elements[key].setAttribute("type", "hidden");
+        ExportForm.appendChild(elements[key]);
+        elements[key].value = params[key];
+    }
+    //postUrl = postUrl.replace('forward', '');
+    ExportForm.action = postUrl;
+
+    console.log(ExportForm);
+    ExportForm.submit();
+};
 
 class SignStart extends React.Component {
     constructor(props) {
@@ -40,7 +63,7 @@ class SignStart extends React.Component {
     }
 
     handleConfirm() {
-        if (this.state.isAgree) {
+        /*if (this.state.isAgree) {
             this.setState({
                 visible: true,
             });
@@ -48,8 +71,16 @@ class SignStart extends React.Component {
             console.log(this.refs);
             this.refs.checkBox.focus();
             message.warning('请阅读并同意协议！');
-        }
-
+        }*/
+        ajaxPost('/front/financing.do?action=toSign', {
+            prdCode: prdCode
+        }, (data) => {
+            console.log(data);
+            debugger
+            var params = data.data.params;
+            PostSubmit(data.data.baseUrl, params)
+            //location.hash = '#/sign/success'
+        });
     }
 
     hideModal(e) {
@@ -65,7 +96,7 @@ class SignStart extends React.Component {
             if (!err) {
                 console.log('Received values of form: ', JSON.stringify(values));
                 const { sign } = this.props;
-                ajaxPost('/front/financing.do?action=sign', {
+                ajaxPost('/front/financing.do?action=toSign', {
                     prdCode: sign.fundInfo.data.result[0].prdCode,
                     smsCode: values.smsCode,
                     smsFlowNo: sign.states.msgCode.data ? sign.states.msgCode.data.smsFlowNo : ''
@@ -172,6 +203,11 @@ class SignStart extends React.Component {
     }
 }
 
+console.log(Tool.formatDate(null, ''));
+const endDate = Tool.formatDate(null, '');
+const startDate = Tool.formatDate(endDate, '-7d').replace(/\//g, '');
+console.log(startDate, endDate);
+
 export default connect((state) => { return { sign: state.sign } })(
     SubPageWarpper({
         /*beforeLoad: [
@@ -181,7 +217,13 @@ export default connect((state) => { return { sign: state.sign } })(
         ],*/
         beforeLoad: [
             ajaxPromise('/front/financing.do?action=getCustInfo', {}, () => {}),
-            ajaxPromise('/front/financing.do?action=queryFundInfo', {}, () => {})
+            ajaxPromise('/front/financing.do?action=queryFundInfo', {
+                "prdCode": prdCode,
+                //"startDate": '20171019',
+                //"endDate": '20171019',
+                "currentPage": "1",
+                "pageSize": "5"
+            }, () => {})
         ],
         title: '我的理财',
         child: SignStart
