@@ -1,6 +1,4 @@
 import './financeAccount.styl';
-import '../styles/antd.css';
-import '../styles/base.styl';
 import React, { Component } from 'react';
 import { render } from 'react-dom';
 import { Router, Route, Link } from "react-router-dom";
@@ -22,15 +20,19 @@ import "babel-polyfill"
 import rootSaga from './sagas'
 import Tool from 'tool'
 
+var loginName = Tool.cookie.get('loginName');
 var cache = Tool.storage.get('store');
 var initialState = {};
-/*if (cache) {
+if (cache) {
     try {
         initialState = JSON.parse(cache);
+        if (initialState.loginName !== loginName) {
+            initialState = {}
+        }
     } catch (err) {
         console.log(err);
     }
-}*/
+}
 var store = configureStore(initialState, rootReducer, rootSaga);
 
 const customHistory = createHashHistory();
@@ -54,11 +56,13 @@ const Root = () => <Provider store={store}><RouterContainer /></Provider>
 
 window.onbeforeunload = function(event) {
     var state = store.getState();
+    state.loginName = Tool.cookie.get('loginName');
+
     var reg = /\"base64\"\:\"(.*?)\"/g;
     var lastStore = JSON.stringify(state).replace(reg, '"base64":""');
-    //Tool.storage.set('store', lastStore);
+    Tool.storage.set('store', lastStore);
     console.log(lastStore.length)
-    //Tool.cookie.remove('store');
+
     console.log(Tool.storage.get('store'))
 
 }

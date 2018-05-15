@@ -15,7 +15,7 @@ let config = {
         filename: '[name].js',
         publicPath: 'dist/'
     },
-    devtool: 'eval',
+    //devtool: 'source-map',
     module: {
         rules: [
             { test: /\.css$/, use: ['style-loader', 'css-loader'] },
@@ -30,7 +30,7 @@ let config = {
                 exclude: /node_modules/
             }, {
                 test: /\.(png|jpg|gif)$/i,
-                loader: "file-loader?name=img/[name].[ext]&publicPath=./"
+                loader: "file-loader?name=[path][name].[ext]&publicPath=./"
             }
         ]
     },
@@ -41,10 +41,17 @@ let config = {
             hash: true,
             template: './src/index.html'
         }),
-    new webpack.DefinePlugin({
-        'process.env.NODE_ENV': '"production"'
-    }),
-        new UglifyJSPlugin(),
+        new webpack.DefinePlugin({
+            'process.env.NODE_ENV': '"production"'
+        }),
+        new UglifyJSPlugin({
+            uglifyOptions: {
+                comments: false,
+                compress: {
+                    drop_console: true
+                }
+            }
+        }),
         new HtmlWebpackPlugin({
             filename: 'financeAccount.html',
             inject: false, //注入位置'head','body',true,false

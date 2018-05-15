@@ -4,6 +4,9 @@
     <meta charset="utf-8">
     <meta http-equiv="Cache-Control" content="max-age=3600" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <% var env = process.env.NODE_ENV==='production' ? true : false %>
+    <link href="<%=env?'antd.css' : '' %>" rel="stylesheet">
+    <link href="antd.css" rel="stylesheet">
 </head>
     <body>
         <div id="app"></div>

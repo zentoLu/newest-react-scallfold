@@ -40,7 +40,7 @@ let config = {
                 loader: 'babel-loader'
             }, {
                 test: /\.(png|jpg|gif)$/i,
-                loader: "file-loader?name=img/[name].[ext]&publicPath=./"
+                loader: "file-loader?name=[path][name].[ext]&publicPath=./"
             }
         ]
     },

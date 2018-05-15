@@ -283,7 +283,9 @@ class AccountForm extends React.Component {
         data.smsFlowNo = account.states.msgCode.data ? account.states.msgCode.data.smsFlowNo : ''
         //开户城市和详细地址
         data.openCityNo = data.bankCity[1]
-        data.address = data.addressPrefixSelect.map((it) => { return it.label }).join('') + data.addressDetail
+        //data.address = data.addressPrefixSelect.map((it) => { return it.label }).join('') + data.addressDetail
+        let addressLabel = document.getElementById('addressPrefix').previousSibling.innerText.replace(/[^\u0391-\uFFE5]/g, '')
+        data.address = addressLabel + data.addressDetail
         data.bankCity = data.bankCity.join()
         data.addressPrefix = data.addressPrefix.join()
         data.addressPrefixSelect = null
