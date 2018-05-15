@@ -25,6 +25,7 @@ let config = {
                     loader: 'babel-loader',
                     options: {
                         presets: ['es2015', 'react'],
+                        "plugins": ["react-hot-loader/babel", "transform-runtime", ["import", { "libraryName": "antd", "libraryDirectory": "es", "style": "css" }]]
                     }
                 },
                 exclude: /node_modules/
